@@ -70,16 +70,28 @@ export default function Navigation() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolledDown, setScrolledDown] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   
   // Track scroll position to add shadow effect
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollTop = window.pageYOffset || (typeof document !== 'undefined' ? document.documentElement.scrollTop : 0);
       setScrolledDown(scrollTop > 10);
     };
     
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  // Check theme on component mount (client-side only)
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      // Check if dark mode is enabled
+      const isDarkMode = document.body?.classList.contains('dark');
+      setIsDark(isDarkMode);
+    }
   }, []);
   
   // Handle mobile menu toggle
@@ -89,17 +101,21 @@ export default function Navigation() {
   
   // Toggle theme
   const toggleDarkMode = () => {
-    const body = document.body;
-    if (body.classList.contains('dark')) {
-      body.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    } else {
-      body.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
+    if (typeof document !== 'undefined') {
+      const body = document.body;
+      const newIsDark = !body.classList.contains('dark');
+      
+      if (newIsDark) {
+        body.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        body.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
+      
+      setIsDark(newIsDark);
     }
   };
-  
-  const isDark = document.body?.classList.contains('dark');
   
   return (
     <HideOnScroll>

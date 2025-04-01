@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 
@@ -23,12 +23,12 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardActions,
   Divider,
   IconButton,
   InputAdornment,
   CircularProgress,
-  Stack
+  Stack,
+  Snackbar
 } from '@mui/material';
 
 // MUI Icons
@@ -38,13 +38,15 @@ import {
   Warning as WarningIcon,
   ErrorOutline as ErrorOutlineIcon,
   Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon
+  VisibilityOff as VisibilityOffIcon,
+  Check as CheckIcon
 } from '@mui/icons-material';
 
-export default function PitchGeneratorPage() {
+// 封装使用useSearchParams的组件
+function PitchGeneratorContent() {
   const searchParams = useSearchParams();
-  const companyId = searchParams.get('companyId');
-  const profileId = searchParams.get('profileId');
+  const companyId = searchParams?.get('companyId');
+  const profileId = searchParams?.get('profileId');
 
   const [companyInfo, setCompanyInfo] = useState(null);
   const [targetCompany, setTargetCompany] = useState(null);
@@ -62,12 +64,19 @@ export default function PitchGeneratorPage() {
   ]);
   const [selectedTone, setSelectedTone] = useState('professional');
   const [error, setError] = useState('');
+  const [copySuccess, setCopySuccess] = useState(false);
 
   useEffect(() => {
     // Load company info from localStorage if available
-    const savedCompanyInfo = localStorage.getItem('companyInfo');
-    if (savedCompanyInfo) {
-      setCompanyInfo(JSON.parse(savedCompanyInfo));
+    if (typeof window !== 'undefined') {
+      const savedCompanyInfo = localStorage.getItem('companyInfo');
+      if (savedCompanyInfo) {
+        try {
+          setCompanyInfo(JSON.parse(savedCompanyInfo));
+        } catch (e) {
+          console.error('Error parsing company info:', e);
+        }
+      }
     }
 
     // For demo purposes, load mock data
@@ -219,8 +228,12 @@ export default function PitchGeneratorPage() {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedPitch);
-    alert('Copied to clipboard');
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(generatedPitch).then(() => {
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 3000);
+      });
+    }
   };
 
   const clearPitch = () => {
@@ -364,7 +377,7 @@ export default function PitchGeneratorPage() {
               size="large"
               onClick={generatePitch}
               disabled={loading}
-              startIcon={loading && <CircularProgress size={20} color="inherit" />}
+              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
             >
               {loading ? 'Generating...' : 'Generate Sales Email'}
             </Button>
@@ -410,6 +423,38 @@ export default function PitchGeneratorPage() {
           </>
         )}
       </Card>
+      
+      {/* Success message for copy operation */}
+      <Snackbar
+        open={copySuccess}
+        autoHideDuration={3000}
+        onClose={() => setCopySuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          icon={<CheckIcon />}
+          severity="success"
+          variant="filled"
+        >
+          Copied to clipboard!
+        </Alert>
+      </Snackbar>
     </Container>
+  );
+}
+
+// 主页面组件，使用Suspense包装使用useSearchParams的内容组件
+export default function PitchGeneratorPage() {
+  return (
+    <Suspense fallback={
+      <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
+        <CircularProgress />
+        <Typography variant="body1" sx={{ mt: 2 }}>
+          Loading...
+        </Typography>
+      </Container>
+    }>
+      <PitchGeneratorContent />
+    </Suspense>
   );
 } 

@@ -160,35 +160,28 @@ export default function SettingsPage() {
                     control={control}
                     rules={{ required: 'Company size is required' }}
                     render={({ field }) => (
-                      <TextField
-                        {...field}
-                        select
-                        label="Company Size"
-                        fullWidth
-                        required
-                        error={!!errors.size}
-                        helperText={errors.size?.message}
+                      <Box
                         sx={{ width: '100%' }}
-                        SelectProps={{
-                          MenuProps: {
-                            PaperProps: {
-                              style: {
-                                maxHeight: 300
-                              }
-                            }
-                          },
-                          displayEmpty: true,
-                          sx: { width: '100%' }
-                        }}
-                      >
-                        <MenuItem value="">Please select</MenuItem>
-                        <MenuItem value="1-10">1-10 employees</MenuItem>
-                        <MenuItem value="11-50">11-50 employees</MenuItem>
-                        <MenuItem value="51-200">51-200 employees</MenuItem>
-                        <MenuItem value="201-500">201-500 employees</MenuItem>
-                        <MenuItem value="501-1000">501-1000 employees</MenuItem>
-                        <MenuItem value="1000+">1000+ employees</MenuItem>
-                      </TextField>
+                        >
+                        <TextField
+                          {...field}
+                          select
+                          sx={{ width: '100%' }}
+                          label="Company Size"
+                          required
+                          fullWidth
+                          error={!!errors.size}
+                          helperText={errors.size?.message}
+                        >
+                          <MenuItem value="">Please select</MenuItem>
+                          <MenuItem value="1-10">1-10 employees</MenuItem>
+                          <MenuItem value="11-50">11-50 employees</MenuItem>
+                          <MenuItem value="51-200">51-200 employees</MenuItem>
+                          <MenuItem value="201-500">201-500 employees</MenuItem>
+                          <MenuItem value="501-1000">501-1000 employees</MenuItem>
+                          <MenuItem value="1000+">1000+ employees</MenuItem>
+                        </TextField>
+                      </Box>
                     )}
                   />
                 </Grid>

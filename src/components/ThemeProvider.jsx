@@ -181,21 +181,49 @@ const darkTheme = createTheme({
 });
 
 export default function ThemeProvider({ children }) {
+  // 始终以浅色主题开始，避免服务器/客户端不匹配
   const [isDark, setIsDark] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   
-  // Check system preference on mount
+  // 标记客户端已加载
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDark(mediaQuery.matches);
+    setIsClient(true);
     
-    // Add listener for theme changes
-    const handler = (e) => setIsDark(e.matches);
-    mediaQuery.addEventListener('change', handler);
-    
-    return () => mediaQuery.removeEventListener('change', handler);
+    // 检查localStorage中的主题设置
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      setIsDark(true);
+      document.body.classList.add('dark');
+    } else if (savedTheme === 'light') {
+      setIsDark(false);
+      document.body.classList.remove('dark');
+    } else {
+      // 如果没有保存的偏好，则检查系统偏好
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const systemPrefersDark = mediaQuery.matches;
+      setIsDark(systemPrefersDark);
+      
+      if (systemPrefersDark) {
+        document.body.classList.add('dark');
+      }
+      
+      // 添加主题变化监听器
+      const handler = (e) => {
+        setIsDark(e.matches);
+        if (e.matches) {
+          document.body.classList.add('dark');
+        } else {
+          document.body.classList.remove('dark');
+        }
+      };
+      
+      mediaQuery.addEventListener('change', handler);
+      return () => mediaQuery.removeEventListener('change', handler);
+    }
   }, []);
   
-  const theme = isDark ? darkTheme : lightTheme;
+  // 在客户端使用实际主题，在服务器端始终使用浅色主题以确保一致性
+  const theme = isClient && isDark ? darkTheme : lightTheme;
   
   return (
     <ThemeContext.Provider value={{ isDark, setIsDark }}>

@@ -2,6 +2,7 @@ import './globals.css';
 import Navigation from '../components/Navigation';
 import ThemeProvider from '../components/ThemeProvider';
 import { Box, Container } from '@mui/material';
+import Footer from '../components/Footer';
 
 export const metadata = {
   title: 'Sales Automation Tool',
@@ -30,26 +31,7 @@ export default function RootLayout({ children }) {
             >
               {children}
             </Container>
-            <Box 
-              component="footer" 
-              sx={{ 
-                py: 3, 
-                mt: 'auto',
-                borderTop: 1, 
-                borderColor: 'divider',
-                backgroundColor: 'background.paper'
-              }}
-            >
-              <Container maxWidth="xl">
-                <Box sx={{ 
-                  textAlign: 'center', 
-                  color: 'text.secondary',
-                  fontSize: '0.875rem'
-                }}>
-                  © {new Date().getFullYear()} Sales Automation Tool · Powered by AI
-                </Box>
-              </Container>
-            </Box>
+            <Footer />
           </Box>
         </ThemeProvider>
       </body>
