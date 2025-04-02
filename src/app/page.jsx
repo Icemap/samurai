@@ -34,38 +34,38 @@ export default function Home() {
   // Features data
   const features = [
     {
-      title: 'AI-Powered Email Writing',
-      description: 'Automatically generate high-conversion sales emails using advanced AI technology, improving response rates.',
+      title: 'AI-Powered Outreach Writing',
+      description: 'Automatically generate high-conversion SDR outreach emails using advanced AI technology, improving response rates.',
       icon: <EmailIcon />,
       color: theme.palette.primary.light
     },
     {
-      title: 'Intelligent Proposal Generation',
-      description: 'Create personalized sales proposals based on customer needs, reducing preparation time.',
+      title: 'Smart Prospect Research',
+      description: 'Research and identify ideal prospects with AI-powered insights, ensuring targeted and personalized outreach.',
       icon: <DescriptionIcon />,
       color: theme.palette.secondary.main
     },
     {
-      title: 'Automated Follow-up Conversations',
-      description: 'Set up automatic follow-up sequences to ensure you maintain contact with prospects without missing any leads.',
+      title: 'Automated Follow-up Sequences',
+      description: 'Set up intelligent follow-up sequences to maintain consistent engagement with prospects.',
       icon: <ChatIcon />,
       color: theme.palette.info.main
     },
     {
-      title: 'Customer Relationship Management',
-      description: 'Integrated CRM functionality to track all customer interactions and sales funnel status.',
+      title: 'Prospect Relationship Management',
+      description: 'Track all prospect interactions and engagement status throughout your outreach process.',
       icon: <PeopleIcon />,
       color: theme.palette.warning.main
     },
     {
-      title: 'Sales Data Analytics',
-      description: 'Powerful analytics dashboard to help you understand sales performance and areas for improvement.',
+      title: 'Outreach Analytics',
+      description: 'Comprehensive analytics dashboard to measure outreach performance and optimize your approach.',
       icon: <BarChartIcon />,
       color: theme.palette.error.main
     },
     {
-      title: 'Time Efficiency Improvement',
-      description: 'Automate repetitive tasks, allowing sales teams to focus on building relationships and closing deals.',
+      title: 'Productivity Enhancement',
+      description: 'Automate repetitive tasks, allowing SDRs to focus on building meaningful prospect relationships.',
       icon: <AccessTimeIcon />,
       color: theme.palette.success.main
     }
@@ -101,11 +101,11 @@ export default function Home() {
               lineHeight: 1.2
             }}
           >
-            AI-Driven
+            AI-Powered
             <Box component="span" sx={{ color: 'primary.main', mx: 1 }}>
-              Sales Automation
+              SDR Automation
             </Box>
-            Tool
+            Platform
           </Typography>
 
           <Typography
@@ -117,7 +117,7 @@ export default function Home() {
               mb: 5
             }}
           >
-            Use artificial intelligence to automatically generate personalized sales emails, proposals, and follow-ups to increase conversion rates and save time.
+            Leverage artificial intelligence to generate personalized outreach emails, research prospects, and manage follow-ups to increase meeting booking rates and improve SDR productivity.
           </Typography>
 
           <Stack
@@ -161,14 +161,14 @@ export default function Home() {
               fontWeight="bold"
               gutterBottom
             >
-              Powerful Features, Simplified Sales Process
+              Powerful Features for Modern SDRs
             </Typography>
             <Typography
               variant="h6"
               color="text.secondary"
               sx={{ maxWidth: 800, mx: 'auto' }}
             >
-              Our sales automation tools provide comprehensive features to help your team focus on what matters most—closing deals.
+              Our SDR automation tools provide comprehensive features to help your team focus on what matters most—booking quality meetings.
             </Typography>
           </Box>
 
@@ -242,10 +242,10 @@ export default function Home() {
             <Grid container spacing={4} alignItems="center">
               <Grid item xs={12} md={8}>
                 <Typography variant="h4" component="h2" fontWeight="bold" gutterBottom>
-                  Ready to boost your sales efficiency?
+                  Ready to boost your SDR productivity?
                 </Typography>
                 <Typography variant="h6" sx={{ opacity: 0.9, mb: { xs: 3, md: 0 } }}>
-                  Join thousands of businesses using our AI sales tools to increase conversion rates and revenue.
+                  Join modern SDR teams using our AI tools to increase meeting booking rates and improve outreach efficiency.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={4} sx={{ textAlign: { xs: 'left', md: 'right' } }}>
@@ -289,7 +289,7 @@ export default function Home() {
             gutterBottom
             sx={{ mb: 6 }}
           >
-            Customer Feedback
+            SDR Success Stories
           </Typography>
 
           <Grid container spacing={4}>
@@ -302,14 +302,14 @@ export default function Home() {
                     sx={{ fontStyle: 'italic', mb: 3 }}
                     color="text.secondary"
                   >
-                    "This tool has helped our sales team improve efficiency by 40%. The quality of AI-generated emails and proposals exceeded our expectations, and client feedback has been very positive."
+                    "This platform has helped our SDR team improve meeting booking rates by 40%. The AI-generated outreach emails are highly personalized and engaging, resulting in significantly better response rates."
                   </Typography>
                   <Box>
                     <Typography variant="subtitle1" fontWeight="medium">
                       Michael Zhang
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Sales Director, Tech Innovation Inc.
+                      SDR Manager, Tech Innovation Inc.
                     </Typography>
                   </Box>
                 </CardContent>
@@ -325,14 +325,14 @@ export default function Home() {
                     sx={{ fontStyle: 'italic', mb: 3 }}
                     color="text.secondary"
                   >
-                    "Since using this platform, our sales cycle has shortened by 30%, and team members can handle more potential clients. The automated follow-up feature is particularly useful."
+                    "Since implementing this tool, our SDRs can handle 3x more prospects while maintaining high-quality personalization. The automated follow-up sequences have been particularly effective."
                   </Typography>
                   <Box>
                     <Typography variant="subtitle1" fontWeight="medium">
                       Tina Lee
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Business Development Manager, Future Business Solutions
+                      Head of SDR, Future Business Solutions
                     </Typography>
                   </Box>
                 </CardContent>

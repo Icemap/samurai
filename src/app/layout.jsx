@@ -5,8 +5,8 @@ import { Box, Container } from '@mui/material';
 import Footer from '../components/Footer';
 
 export const metadata = {
-  title: 'Sales Automation Tool',
-  description: 'Empower your sales with AI technology',
+  title: 'SDR Automation Tool',
+  description: 'Empower your SDR team with AI technology',
 };
 
 export default function RootLayout({ children }) {

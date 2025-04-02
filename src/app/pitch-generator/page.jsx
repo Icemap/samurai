@@ -142,7 +142,7 @@ function PitchGeneratorContent() {
   useEffect(() => {
     // Generate prompt based on available information
     if (companyInfo && (targetCompany || targetPerson)) {
-      let newPrompt = `Please write a sales email as a representative of ${companyInfo.companyName}, `;
+      let newPrompt = `Please write an SDR outreach email as a representative of ${companyInfo.companyName}, `;
       
       if (targetPerson) {
         newPrompt += `addressed to ${targetPerson.name} (${targetPerson.title}) at ${targetPerson.company}.`;
@@ -156,17 +156,17 @@ function PitchGeneratorContent() {
       newPrompt += `- Description: ${companyInfo.description}\n`;
       
       if (companyInfo.uniqueSellingPoints) {
-        newPrompt += `- Unique Selling Points: ${companyInfo.uniqueSellingPoints}\n`;
+        newPrompt += `- Unique Value Propositions: ${companyInfo.uniqueSellingPoints}\n`;
       }
       
       if (targetCompany) {
-        newPrompt += `\nTarget company information:\n`;
+        newPrompt += `\nTarget prospect company information:\n`;
         newPrompt += `- Company Name: ${targetCompany.name}\n`;
         newPrompt += `- Industry: ${targetCompany.industry}\n`;
         newPrompt += `- Description: ${targetCompany.description}\n`;
       }
       
-      newPrompt += `\nPlease write this email with a ${getToneName(selectedTone)} tone, highlighting our value proposition and explaining how we can help them solve problems or improve their business. The email should include a clear call to action.`;
+      newPrompt += `\nPlease write this outreach email with a ${getToneName(selectedTone)} tone, focusing on building interest and establishing relevance. The email should be concise, personalized, and include a clear call to action for scheduling an initial discovery call.`;
       
       setPrompt(newPrompt);
     }
@@ -200,7 +200,7 @@ function PitchGeneratorContent() {
           messages: [
             {
               role: 'system',
-              content: 'You are a professional sales email copywriting expert.'
+              content: 'You are a professional SDR (Sales Development Representative) outreach email copywriting expert.'
             },
             {
               role: 'user',
@@ -248,10 +248,10 @@ function PitchGeneratorContent() {
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Box sx={{ mb: 4, textAlign: 'center' }}>
         <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
-          Sales Email Generator
+          SDR Email Generator
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Generate personalized sales emails using AI based on your company information and target customer data
+          Generate personalized SDR outreach emails using AI based on your company information and target prospect data
         </Typography>
       </Box>
 
@@ -281,7 +281,7 @@ function PitchGeneratorContent() {
                 )}
                 {!targetCompany && !targetPerson && (
                   <Box component="li">
-                    Select a target customer from
+                    Select a target prospect from
                     <Link href="/search" sx={{ mx: 0.5 }}>
                       Company Search
                     </Link>
@@ -379,7 +379,7 @@ function PitchGeneratorContent() {
               disabled={loading}
               startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
             >
-              {loading ? 'Generating...' : 'Generate Sales Email'}
+              {loading ? 'Generating...' : 'Generate SDR Email'}
             </Button>
           </Box>
         </CardContent>
@@ -389,7 +389,7 @@ function PitchGeneratorContent() {
             <Divider />
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6">Generated Sales Email</Typography>
+                <Typography variant="h6">Generated SDR Email</Typography>
                 <Stack direction="row" spacing={1}>
                   <Button
                     variant="outlined"
