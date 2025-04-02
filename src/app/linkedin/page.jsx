@@ -229,74 +229,79 @@ export default function LinkedInSearchPage() {
   };
 
   return (
-    <Box sx={{ py: 3 }}>
+    <Box sx={{ py: 3, width: '100%', maxWidth: '100%' }}>
       <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
         LinkedIn User Search
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Search for potential clients' LinkedIn information, including email, position, and work experience
+        Search for potential prospects' LinkedIn information, including email, position, and work experience
       </Typography>
 
-      <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mb: 4, maxWidth: 'md' }}>
-        <Grid container>
-          <Grid item xs>
-            <Controller
-              name="query"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  placeholder="Enter name, position, company, or skills"
-                  sx={{ 
-                    '& .MuiOutlinedInput-root': {
-                      borderTopRightRadius: 0,
-                      borderBottomRightRadius: 0,
-                    }
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                    endAdornment: searchQuery ? (
-                      <InputAdornment position="end">
-                        <IconButton
-                          edge="end"
-                          onClick={() => setValue('query', '')}
-                        >
-                          <ClearIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ) : null
-                  }}
+      <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mb: 4, width: '100%', maxWidth: '100%' }}>
+        <Grid container justifyContent="center">
+          <Grid item xs={12} md={10} lg={8}>
+            <Grid container spacing={1}>
+              <Grid item xs>
+                <Controller
+                  name="query"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      placeholder="Enter name, position, company, or skills"
+                      sx={{ 
+                        '& .MuiOutlinedInput-root': {
+                          borderTopRightRadius: 0,
+                          borderBottomRightRadius: 0,
+                        },
+                        minWidth: '500px'
+                      }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon />
+                          </InputAdornment>
+                        ),
+                        endAdornment: searchQuery ? (
+                          <InputAdornment position="end">
+                            <IconButton
+                              edge="end"
+                              onClick={() => setValue('query', '')}
+                            >
+                              <ClearIcon />
+                            </IconButton>
+                          </InputAdornment>
+                        ) : null
+                      }}
+                    />
+                  )}
                 />
-              )}
-            />
-          </Grid>
-          <Grid item>
-            <Button
-              type="submit"
-              variant="contained"
-              size="large"
-              sx={{ 
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0,
-                height: '100%',
-                px: 3
-              }}
-            >
-              Search
-            </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  sx={{ 
+                    borderTopLeftRadius: 0,
+                    borderBottomLeftRadius: 0,
+                    height: '100%',
+                    px: 4
+                  }}
+                >
+                  Search
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Box>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={4} sx={{ width: '100%' }} justifyContent="center">
         {/* Search Results */}
-        <Grid item xs={12} lg={4}>
+        <Grid item xs={12} md={10} lg={5}>
           {isSearching ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100 }}>
               <CircularProgress size={30} sx={{ mr: 2 }} />
@@ -381,7 +386,7 @@ export default function LinkedInSearchPage() {
 
         {/* Profile Details */}
         {selectedProfile && (
-          <Grid item xs={12} lg={8}>
+          <Grid item xs={12} md={10} lg={7}>
             <Card variant="outlined">
               <CardHeader
                 avatar={
@@ -519,7 +524,7 @@ export default function LinkedInSearchPage() {
                   variant="contained"
                   onClick={() => window.open('/pitch-generator?profileId=' + selectedProfile.id, '_blank')}
                 >
-                  Generate Sales Email
+                  Generate SDR Email
                 </Button>
               </CardActions>
             </Card>

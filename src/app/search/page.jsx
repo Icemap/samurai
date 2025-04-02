@@ -193,7 +193,7 @@ export default function SearchPage() {
   };
 
   return (
-    <Box sx={{ py: 3 }}>
+    <Box sx={{ py: 3, width: '100%', maxWidth: '100%' }}>
       <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
         Company Information Search
       </Typography>
@@ -201,66 +201,71 @@ export default function SearchPage() {
         Search for detailed company information and financial data, including K-10 report information
       </Typography>
 
-      <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mb: 4, maxWidth: 'md' }}>
-        <Grid container>
-          <Grid item xs>
-            <Controller
-              name="query"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  placeholder="Enter company name, ticker, or industry"
-                  sx={{ 
-                    '& .MuiOutlinedInput-root': {
-                      borderTopRightRadius: 0,
-                      borderBottomRightRadius: 0,
-                    }
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                    endAdornment: searchQuery ? (
-                      <InputAdornment position="end">
-                        <IconButton
-                          edge="end"
-                          onClick={() => setValue('query', '')}
-                        >
-                          <ClearIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ) : null
-                  }}
+      <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mb: 4, width: '100%', maxWidth: '100%' }}>
+        <Grid container justifyContent="center">
+          <Grid item xs={12} md={10} lg={8}>
+            <Grid container spacing={1}>
+              <Grid item xs>
+                <Controller
+                  name="query"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      placeholder="Enter company name, ticker, or industry"
+                      sx={{ 
+                        '& .MuiOutlinedInput-root': {
+                          borderTopRightRadius: 0,
+                          borderBottomRightRadius: 0,
+                        },
+                        minWidth: '500px'
+                      }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon />
+                          </InputAdornment>
+                        ),
+                        endAdornment: searchQuery ? (
+                          <InputAdornment position="end">
+                            <IconButton
+                              edge="end"
+                              onClick={() => setValue('query', '')}
+                            >
+                              <ClearIcon />
+                            </IconButton>
+                          </InputAdornment>
+                        ) : null
+                      }}
+                    />
+                  )}
                 />
-              )}
-            />
-          </Grid>
-          <Grid item>
-            <Button
-              type="submit"
-              variant="contained"
-              size="large"
-              sx={{ 
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0,
-                height: '100%',
-                px: 3
-              }}
-            >
-              Search
-            </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  sx={{ 
+                    borderTopLeftRadius: 0,
+                    borderBottomLeftRadius: 0,
+                    height: '100%',
+                    px: 4
+                  }}
+                >
+                  Search
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Box>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={4} sx={{ width: '100%' }} justifyContent="center">
         {/* Search Results */}
-        <Grid item xs={12} lg={4}>
+        <Grid item xs={12} md={10} lg={5}>
           {isSearching ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100 }}>
               <CircularProgress size={30} sx={{ mr: 2 }} />
@@ -343,7 +348,7 @@ export default function SearchPage() {
 
         {/* Company Details */}
         {selectedCompany && (
-          <Grid item xs={12} lg={8}>
+          <Grid item xs={12} md={10} lg={7}>
             <Paper variant="outlined">
               {/* Header Information */}
               <Box sx={{ p: 3, bgcolor: 'background.default', borderBottom: 1, borderColor: 'divider' }}>
@@ -571,7 +576,7 @@ export default function SearchPage() {
                   variant="contained"
                   onClick={() => window.open('/pitch-generator?companyId=' + selectedCompany.id, '_blank')}
                 >
-                  Generate Sales Email
+                  Generate SDR Email
                 </Button>
               </Box>
             </Paper>

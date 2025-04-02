@@ -166,7 +166,10 @@ export default function SettingsPage() {
                         <TextField
                           {...field}
                           select
-                          sx={{ width: '100%' }}
+                          sx={{
+                            width: '100%',
+                            minWidth: '200px'
+                          }}
                           label="Company Size"
                           required
                           fullWidth
