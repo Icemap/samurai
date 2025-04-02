@@ -66,7 +66,7 @@ export default function SettingsPage() {
 
   // Load saved data (if any)
   useEffect(() => {
-    const savedCompanyInfo = localStorage.getItem('companyInfo');
+    const savedCompanyInfo = localStorage.getItem('myCompanyInfo');
     if (savedCompanyInfo) {
       const parsed = JSON.parse(savedCompanyInfo);
       Object.keys(parsed).forEach(key => {
@@ -81,7 +81,7 @@ export default function SettingsPage() {
     // Currently, we use a timeout to simulate an API call
     setTimeout(() => {
       // Save to localStorage for persistence
-      localStorage.setItem('companyInfo', JSON.stringify(data));
+      localStorage.setItem('myCompanyInfo', JSON.stringify(data));
       setLoading(false);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);

@@ -3,8 +3,6 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
-
-// MUI Components
 import {
   Box,
   Typography,
@@ -30,8 +28,6 @@ import {
   Stack,
   Snackbar
 } from '@mui/material';
-
-// MUI Icons
 import {
   ContentCopy as ContentCopyIcon,
   Delete as DeleteIcon,
@@ -45,13 +41,11 @@ import {
 // 封装使用useSearchParams的组件
 function PitchGeneratorContent() {
   const searchParams = useSearchParams();
-  const companyId = searchParams?.get('companyId');
-  const profileId = searchParams?.get('profileId');
-
-  const [companyInfo, setCompanyInfo] = useState(null);
-  const [targetCompany, setTargetCompany] = useState(null);
-  const [targetPerson, setTargetPerson] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [myCompanyInfo, setMyCompanyInfo] = useState(null);
+  const [targetCompanyInfo, setTargetCompanyInfo] = useState(null);
+  const [searchType, setSearchType] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [generatedPitch, setGeneratedPitch] = useState('');
   const [prompt, setPrompt] = useState('');
   const [apiKey, setApiKey] = useState('');
@@ -63,114 +57,82 @@ function PitchGeneratorContent() {
     { id: 'concise', name: 'Concise' },
   ]);
   const [selectedTone, setSelectedTone] = useState('professional');
-  const [error, setError] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
 
   useEffect(() => {
-    // Load company info from localStorage if available
-    if (typeof window !== 'undefined') {
-      const savedCompanyInfo = localStorage.getItem('companyInfo');
-      if (savedCompanyInfo) {
-        try {
-          setCompanyInfo(JSON.parse(savedCompanyInfo));
-        } catch (e) {
-          console.error('Error parsing company info:', e);
-        }
+    try {
+      // Get my company info from localStorage
+      const storedMyCompanyInfo = localStorage.getItem('myCompanyInfo');
+      if (!storedMyCompanyInfo) {
+        setError('Please configure your company information in Settings first.');
+        return;
       }
-    }
+      setMyCompanyInfo(JSON.parse(storedMyCompanyInfo));
 
-    // For demo purposes, load mock data
-    if (companyId) {
-      // Simulate loading target company
-      const mockCompanies = [
-        {
-          id: 1,
-          name: 'Acme Corporation',
-          industry: 'Technology',
-          description: 'Acme Corporation is a global leader in technology, focused on providing innovative software solutions.'
-        },
-        {
-          id: 2,
-          name: 'Globex Corporation',
-          industry: 'Manufacturing',
-          description: 'Globex Corporation is an innovative manufacturing enterprise focused on designing and producing high-precision industrial components.'
-        },
-        {
-          id: 3,
-          name: 'Soylent Corp',
-          industry: 'Consumer Goods',
-          description: 'Soylent Corp is a company focused on innovative food solutions, committed to developing sustainable food alternatives.'
-        }
-      ];
-      
-      const company = mockCompanies.find(c => c.id === parseInt(companyId));
-      if (company) {
-        setTargetCompany(company);
-      }
-    }
+      // Get the search type and target data from localStorage
+      const storedSearchType = localStorage.getItem('searchType');
+      setSearchType(storedSearchType);
 
-    if (profileId) {
-      // Simulate loading target person
-      const mockProfiles = [
-        {
-          id: 1,
-          name: 'Sarah Johnson',
-          title: 'Chief Technology Officer',
-          company: 'Acme Corporation'
-        },
-        {
-          id: 2,
-          name: 'Michael Chen',
-          title: 'Director of Sales',
-          company: 'Globex Corporation'
-        },
-        {
-          id: 3,
-          name: 'Emily Rodriguez',
-          title: 'VP of Product',
-          company: 'Soylent Corp'
+      if (storedSearchType === 'company') {
+        const storedTargetCompany = localStorage.getItem('selectedTargetCompany');
+        if (storedTargetCompany) {
+          setTargetCompanyInfo(JSON.parse(storedTargetCompany));
+        } else {
+          setError('No target company data found. Please select a company first.');
         }
-      ];
-      
-      const profile = mockProfiles.find(p => p.id === parseInt(profileId));
-      if (profile) {
-        setTargetPerson(profile);
+      } else if (storedSearchType === 'linkedin') {
+        // Handle LinkedIn profile data (to be implemented)
+        const storedProfileData = localStorage.getItem('selectedProfileData');
+        if (storedProfileData) {
+          setTargetCompanyInfo(JSON.parse(storedProfileData));
+        } else {
+          setError('No profile data found. Please select a profile first.');
+        }
+      } else {
+        setError('Please select a company or profile from the search pages first.');
       }
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError('Error loading data. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  }, [companyId, profileId]);
+  }, []);
 
   useEffect(() => {
     // Generate prompt based on available information
-    if (companyInfo && (targetCompany || targetPerson)) {
-      let newPrompt = `Please write an SDR outreach email as a representative of ${companyInfo.companyName}, `;
+    if (myCompanyInfo && targetCompanyInfo) {
+      let newPrompt = `Please write an SDR outreach email as a representative of ${myCompanyInfo.companyName}, `;
       
-      if (targetPerson) {
-        newPrompt += `addressed to ${targetPerson.name} (${targetPerson.title}) at ${targetPerson.company}.`;
-      } else if (targetCompany) {
-        newPrompt += `addressed to ${targetCompany.name}.`;
+      if (searchType === 'linkedin') {
+        newPrompt += `addressed to ${targetCompanyInfo.name} (${targetCompanyInfo.title}) at ${targetCompanyInfo.company}.`;
+      } else if (searchType === 'company') {
+        newPrompt += `addressed to ${targetCompanyInfo.name}.`;
       }
       
       newPrompt += `\n\nMy company information:\n`;
-      newPrompt += `- Company Name: ${companyInfo.companyName}\n`;
-      newPrompt += `- Industry: ${companyInfo.industry}\n`;
-      newPrompt += `- Description: ${companyInfo.description}\n`;
+      newPrompt += `- Company Name: ${myCompanyInfo.companyName}\n`;
+      newPrompt += `- Industry: ${myCompanyInfo.industry}\n`;
+      newPrompt += `- Description: ${myCompanyInfo.description}\n`;
       
-      if (companyInfo.uniqueSellingPoints) {
-        newPrompt += `- Unique Value Propositions: ${companyInfo.uniqueSellingPoints}\n`;
+      if (myCompanyInfo.uniqueSellingPoints) {
+        newPrompt += `- Unique Value Propositions: ${myCompanyInfo.uniqueSellingPoints}\n`;
       }
       
-      if (targetCompany) {
+      if (searchType === 'company') {
         newPrompt += `\nTarget prospect company information:\n`;
-        newPrompt += `- Company Name: ${targetCompany.name}\n`;
-        newPrompt += `- Industry: ${targetCompany.industry}\n`;
-        newPrompt += `- Description: ${targetCompany.description}\n`;
+        newPrompt += `- Company Name: ${targetCompanyInfo.name}\n`;
+        newPrompt += `- Industry: ${targetCompanyInfo.industry}\n`;
+        newPrompt += `- Description: ${targetCompanyInfo.description}\n`;
+        newPrompt += `- Revenue: ${targetCompanyInfo.revenue}\n`;
+        newPrompt += `- Employees: ${targetCompanyInfo.employees}\n`;
       }
       
       newPrompt += `\nPlease write this outreach email with a ${getToneName(selectedTone)} tone, focusing on building interest and establishing relevance. The email should be concise, personalized, and include a clear call to action for scheduling an initial discovery call.`;
       
       setPrompt(newPrompt);
     }
-  }, [companyInfo, targetCompany, targetPerson, selectedTone]);
+  }, [myCompanyInfo, targetCompanyInfo, selectedTone, searchType]);
 
   const getToneName = (toneId) => {
     const tone = toneOptions.find(t => t.id === toneId);
@@ -244,6 +206,46 @@ function PitchGeneratorContent() {
     setShowApiKey(!showApiKey);
   };
 
+  if (loading) {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '400px' 
+      }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Typography variant="body1">
+          Please go back to the {' '}
+          <Button 
+            color="primary" 
+            onClick={() => window.location.href = '/search'}
+          >
+            Company Search
+          </Button>
+          {' '} or {' '}
+          <Button 
+            color="primary" 
+            onClick={() => window.location.href = '/linkedin'}
+          >
+            LinkedIn Search
+          </Button>
+          {' '} page to select a target first.
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Box sx={{ mb: 4, textAlign: 'center' }}>
@@ -261,41 +263,34 @@ function PitchGeneratorContent() {
           sx={{ borderBottom: 1, borderColor: 'divider' }}
         />
         <CardContent>
-          {(!companyInfo || (!targetCompany && !targetPerson)) && (
-            <Alert 
-              severity="warning" 
-              variant="outlined" 
-              icon={<WarningIcon />}
-              sx={{ mb: 3 }}
-            >
-              <AlertTitle>Note</AlertTitle>
-              <Box component="ul" sx={{ pl: 2 }}>
-                {!companyInfo && (
-                  <Box component="li">
-                    Please configure your company information in the
-                    <Link href="/settings" sx={{ mx: 0.5 }}>
-                      Settings page
-                    </Link>
-                    first
-                  </Box>
-                )}
-                {!targetCompany && !targetPerson && (
-                  <Box component="li">
-                    Select a target prospect from
-                    <Link href="/search" sx={{ mx: 0.5 }}>
-                      Company Search
-                    </Link>
-                    or
-                    <Link href="/linkedin" sx={{ mx: 0.5 }}>
-                      LinkedIn Search
-                    </Link>
-                  </Box>
-                )}
-              </Box>
-            </Alert>
-          )}
+          {/* Display selected company or profile information */}
+          <Grid item xs={12}>
+            <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.default', mb: 3 }}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                My Company:
+              </Typography>
+              <Typography variant="body1">
+                {myCompanyInfo?.companyName}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {myCompanyInfo?.industry}
+              </Typography>
+            </Paper>
+            <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.default' }}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                Target {searchType === 'company' ? 'Company' : 'Profile'}:
+              </Typography>
+              <Typography variant="body1">
+                {searchType === 'company' ? targetCompanyInfo?.name : targetCompanyInfo?.name}
+                {searchType === 'company' && ` (${targetCompanyInfo?.ticker})`}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {searchType === 'company' ? targetCompanyInfo?.industry : targetCompanyInfo?.title}
+              </Typography>
+            </Paper>
+          </Grid>
 
-          <Grid container spacing={3}>
+          <Grid container spacing={3} marginTop={5}>
             <Grid item xs={12}>
               <TextField
                 label="OpenAI API Key"

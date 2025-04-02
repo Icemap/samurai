@@ -3,6 +3,13 @@
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import React from 'react';
+import { 
+  searchCompanies, 
+  getCompanyOverview, 
+  getCompanyIncome, 
+  getCompanyBalance,
+  formatFinancialNumber 
+} from '@/services/companyService';
 
 // MUI Components
 import {
@@ -27,7 +34,8 @@ import {
   IconButton,
   Accordion,
   AccordionSummary,
-  AccordionDetails
+  AccordionDetails,
+  Alert
 } from '@mui/material';
 
 // MUI Icons
@@ -38,120 +46,12 @@ import {
   KeyboardArrowRight as KeyboardArrowRightIcon
 } from '@mui/icons-material';
 
-// Mock data for demonstration
-const mockCompanies = [
-  {
-    id: 1,
-    name: 'Apple Inc.',
-    ticker: 'AAPL',
-    industry: 'Technology',
-    revenue: '383.3B',
-    employees: '164,000',
-    founded: '1976',
-    headquarters: 'Cupertino, California',
-    ceo: 'Tim Cook',
-    description: 'Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide. The company offers iPhone, Mac, iPad, and Wearables, Home and Accessories.',
-    k10Data: {
-      fiscalYear: '2023',
-      totalRevenue: '383.3B',
-      netIncome: '96.99B',
-      totalAssets: '352.83B',
-      totalLiabilities: '278.19B',
-      cashAndEquivalents: '29.97B',
-      longTermDebt: '95.98B',
-      riskFactors: [
-        'Global economic conditions',
-        'Supply chain disruptions',
-        'Intense competition in markets',
-        'Rapid technological changes',
-        'Regulatory challenges worldwide'
-      ],
-      keyMetrics: {
-        eps: '6.13',
-        dividendYield: '0.50%',
-        peRatio: '31.82',
-        roic: '56.7%',
-        currentRatio: '0.99'
-      }
-    }
-  },
-  {
-    id: 2,
-    name: 'Alphabet Inc.',
-    ticker: 'GOOGL',
-    industry: 'Technology',
-    revenue: '307.4B',
-    employees: '182,502',
-    founded: '1998',
-    headquarters: 'Mountain View, California',
-    ceo: 'Sundar Pichai',
-    description: 'Alphabet Inc. is the parent company of Google and several former Google subsidiaries. It provides online advertising services, search engine technology, cloud computing, software, and hardware.',
-    k10Data: {
-      fiscalYear: '2023',
-      totalRevenue: '307.4B',
-      netIncome: '73.8B',
-      totalAssets: '411.6B',
-      totalLiabilities: '107.4B',
-      cashAndEquivalents: '110.9B',
-      longTermDebt: '13.2B',
-      riskFactors: [
-        'Changes in digital advertising market',
-        'Intense competition in AI and cloud',
-        'Privacy and data protection regulations',
-        'Antitrust investigations',
-        'Cybersecurity threats'
-      ],
-      keyMetrics: {
-        eps: '5.80',
-        dividendYield: '0%',
-        peRatio: '26.72',
-        roic: '28.9%',
-        currentRatio: '2.40'
-      }
-    }
-  },
-  {
-    id: 3,
-    name: 'Amazon.com Inc.',
-    ticker: 'AMZN',
-    industry: 'Technology & Retail',
-    revenue: '574.8B',
-    employees: '1,541,000',
-    founded: '1994',
-    headquarters: 'Seattle, Washington',
-    ceo: 'Andy Jassy',
-    description: 'Amazon.com Inc. is a technology company focusing on e-commerce, cloud computing, digital streaming, and artificial intelligence. It is one of the world\'s most valuable brands.',
-    k10Data: {
-      fiscalYear: '2023',
-      totalRevenue: '574.8B',
-      netIncome: '30.4B',
-      totalAssets: '462.7B',
-      totalLiabilities: '271.6B',
-      cashAndEquivalents: '73.9B',
-      longTermDebt: '58.1B',
-      riskFactors: [
-        'Intense retail competition',
-        'AWS market competition',
-        'Supply chain disruptions',
-        'Regulatory challenges',
-        'Labor relations and costs'
-      ],
-      keyMetrics: {
-        eps: '2.90',
-        dividendYield: '0%',
-        peRatio: '59.86',
-        roic: '11.5%',
-        currentRatio: '1.05'
-      }
-    }
-  }
-];
-
 export default function SearchPage() {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
-  const [expandedSections, setExpandedSections] = useState({});
+  const [expandedSection, setExpandedSection] = useState('k10');
+  const [error, setError] = useState(null);
   const { control, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
       query: ''
@@ -160,39 +60,91 @@ export default function SearchPage() {
 
   const searchQuery = watch('query');
 
-  const onSubmit = (data) => {
+  const handleAccordionChange = (panel) => (event, isExpanded) => {
+    setExpandedSection(isExpanded ? panel : false);
+  };
+
+  const onSubmit = async (data) => {
     setIsSearching(true);
     setSelectedCompany(null);
-    
-    // Simulate API call
-    setTimeout(() => {
-      // Filter companies based on search criteria
-      const filteredResults = mockCompanies.filter(company => {
-        const query = data.query.toLowerCase();
-        return (
-          company.name.toLowerCase().includes(query) || 
-          company.ticker.toLowerCase().includes(query) || 
-          company.industry.toLowerCase().includes(query) ||
-          company.description.toLowerCase().includes(query)
-        );
-      });
-      
-      setSearchResults(filteredResults);
+    setError(null);
+
+    try {
+      const results = await searchCompanies(data.query);
+      setSearchResults(results);
+    } catch (err) {
+      setError('Failed to search companies. Please try again later.');
+      console.error('Search error:', err);
+    } finally {
       setIsSearching(false);
-    }, 800);
+    }
   };
 
-  const handleCompanySelect = (company) => {
-    setSelectedCompany(company);
-    // Reset expanded sections when selecting a new company
-    setExpandedSections({});
-  };
+  const handleCompanySelect = async (company) => {
+    setIsSearching(true);
+    setError(null);
+    setExpandedSection('k10');
+    setSearchResults([]);
 
-  const toggleSection = (section) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
+    try {
+      const [overview, income, balance] = await Promise.all([
+        getCompanyOverview(company['1. symbol']),
+        getCompanyIncome(company['1. symbol']),
+        getCompanyBalance(company['1. symbol'])
+      ]);
+
+      if (!overview) {
+        throw new Error('Could not fetch company details');
+      }
+
+      const latestIncome = income?.annualReports?.[0] || {};
+      const latestBalance = balance?.annualReports?.[0] || {};
+
+      const targetCompanyInfo = {
+        id: company['1. symbol'],
+        name: company['2. name'],
+        ticker: company['1. symbol'],
+        industry: overview.Industry || 'N/A',
+        revenue: formatFinancialNumber(overview.RevenueTTM) || 'N/A',
+        employees: overview.FullTimeEmployees || 'N/A',
+        founded: 'N/A',
+        headquarters: overview.Address || 'N/A',
+        ceo: overview.CEO || 'N/A',
+        description: overview.Description || 'No description available.',
+        k10Data: {
+          fiscalYear: overview.FiscalYearEnd || 'N/A',
+          totalRevenue: formatFinancialNumber(overview.RevenueTTM) || 'N/A',
+          netIncome: formatFinancialNumber(latestIncome.netIncome) || 'N/A',
+          totalAssets: formatFinancialNumber(latestBalance.totalAssets) || 'N/A',
+          totalLiabilities: formatFinancialNumber(latestBalance.totalLiabilities) || 'N/A',
+          cashAndEquivalents: formatFinancialNumber(latestBalance.cashAndCashEquivalentsAtCarryingValue) || 'N/A',
+          longTermDebt: formatFinancialNumber(latestBalance.longTermDebt) || 'N/A',
+          riskFactors: [
+            'Market competition',
+            'Economic conditions',
+            'Regulatory changes',
+            'Technology risks',
+            'Operational challenges'
+          ],
+          keyMetrics: {
+            eps: formatFinancialNumber(overview.EPS) || 'N/A',
+            dividendYield: overview.DividendYield ? (parseFloat(overview.DividendYield) * 100).toFixed(2) + '%' : 'N/A',
+            peRatio: formatFinancialNumber(overview.PERatio) || 'N/A',
+            roic: formatFinancialNumber(overview.ReturnOnInvestedCapital) || 'N/A',
+            currentRatio: formatFinancialNumber(overview.CurrentRatio) || 'N/A'
+          }
+        }
+      };
+
+      // Store the target company data in localStorage
+      localStorage.setItem('selectedTargetCompany', JSON.stringify(targetCompanyInfo));
+      setSelectedCompany(targetCompanyInfo);
+    } catch (err) {
+      setError('Failed to fetch company details. Please try again later.');
+      console.error('Company details error:', err);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   return (
@@ -269,83 +221,85 @@ export default function SearchPage() {
       <Grid container spacing={4} sx={{ width: '100%' }} justifyContent="center">
         {/* Search Results */}
         <Grid item xs={12} md={10} lg={5}>
-          {isSearching ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100 }}>
-              <CircularProgress size={30} sx={{ mr: 2 }} />
-              <Typography variant="body1" color="text.secondary">
-                Searching...
-              </Typography>
-            </Box>
-          ) : searchResults.length > 0 ? (
-            <Box>
-              <Typography variant="h6" fontWeight="medium" sx={{ mb: 2 }}>
-                Search Results
-              </Typography>
-              <Paper variant="outlined">
-                <List sx={{ p: 0 }}>
-                  {searchResults.map((company, index) => (
-                    <React.Fragment key={company.id}>
-                      {index > 0 && <Divider />}
-                      <ListItemButton
-                        selected={selectedCompany?.id === company.id}
-                        onClick={() => handleCompanySelect(company)}
-                        sx={{
-                          py: 2,
-                          ...(selectedCompany?.id === company.id && {
-                            borderLeft: 3,
-                            borderColor: 'primary.main',
-                            bgcolor: 'primary.lighter'
-                          })
-                        }}
-                      >
-                        <ListItemText
-                          primary={
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <Typography variant="subtitle2" color="primary.main">
-                                {company.name}
-                              </Typography>
-                              <Chip
-                                label={company.ticker}
-                                size="small"
-                                color="success"
-                                variant="outlined"
-                              />
-                            </Box>
-                          }
-                          secondary={
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                              <Typography variant="body2" color="text.secondary">
-                                {company.industry}
-                              </Typography>
-                              <Typography variant="body2" color="text.secondary">
-                                Revenue: {company.revenue}
-                              </Typography>
-                            </Box>
-                          }
-                        />
-                      </ListItemButton>
-                    </React.Fragment>
-                  ))}
-                </List>
-              </Paper>
-            </Box>
-          ) : searchResults.length === 0 && !isSearching && (
-            <Paper 
-              variant="outlined" 
-              sx={{ 
-                p: 5, 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center',
-                bgcolor: 'background.default'
-              }}
-            >
-              <SearchIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
-              <Typography variant="subtitle1" fontWeight="medium">No search results</Typography>
-              <Typography variant="body2" color="text.secondary">
-                Try searching with different keywords.
-              </Typography>
-            </Paper>
+          {!selectedCompany && (
+            <>
+              {isSearching ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100 }}>
+                  <CircularProgress size={30} sx={{ mr: 2 }} />
+                  <Typography variant="body1" color="text.secondary">
+                    Searching...
+                  </Typography>
+                </Box>
+              ) : searchResults.length > 0 ? (
+                <Box>
+                  <Typography variant="h6" fontWeight="medium" sx={{ mb: 2 }}>
+                    Search Results
+                  </Typography>
+                  <Paper variant="outlined">
+                    <List sx={{ p: 0 }}>
+                      {searchResults.map((company) => (
+                        <React.Fragment key={company['1. symbol']}>
+                          <ListItemButton
+                            selected={selectedCompany?.id === company['1. symbol']}
+                            onClick={() => handleCompanySelect(company)}
+                            sx={{
+                              py: 2,
+                              ...(selectedCompany?.id === company['1. symbol'] && {
+                                borderLeft: 3,
+                                borderColor: 'primary.main',
+                                bgcolor: 'primary.lighter'
+                              })
+                            }}
+                          >
+                            <ListItemText
+                              primary={
+                                <Typography variant="subtitle2" color="primary.main" component="div">
+                                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span>{company['2. name']}</span>
+                                    <Chip
+                                      label={company['1. symbol']}
+                                      size="small"
+                                      color="success"
+                                      variant="outlined"
+                                    />
+                                  </Box>
+                                </Typography>
+                              }
+                              secondary={
+                                <Typography variant="body2" color="text.secondary" component="div">
+                                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                                    <span>{company['3. type']}</span>
+                                    <span>{company['4. region']}</span>
+                                  </Box>
+                                </Typography>
+                              }
+                            />
+                          </ListItemButton>
+                          <Divider />
+                        </React.Fragment>
+                      ))}
+                    </List>
+                  </Paper>
+                </Box>
+              ) : searchResults.length === 0 && !isSearching && (
+                <Paper 
+                  variant="outlined" 
+                  sx={{ 
+                    p: 5, 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center',
+                    bgcolor: 'background.default'
+                  }}
+                >
+                  <SearchIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
+                  <Typography variant="subtitle1" fontWeight="medium">No search results</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Try searching with different keywords.
+                  </Typography>
+                </Paper>
+              )}
+            </>
           )}
         </Grid>
 
@@ -425,8 +379,8 @@ export default function SearchPage() {
 
               {/* K-10 Financial Data */}
               <Accordion
-                expanded={expandedSections['k10']}
-                onChange={() => toggleSection('k10')}
+                expanded={expandedSection === 'k10'}
+                onChange={handleAccordionChange('k10')}
                 disableGutters
                 elevation={0}
                 sx={{ 
@@ -577,7 +531,12 @@ export default function SearchPage() {
               <Box sx={{ p: 3, display: 'flex', justifyContent: 'flex-end', borderTop: 1, borderColor: 'divider' }}>
                 <Button
                   variant="contained"
-                  onClick={() => window.open('/pitch-generator?companyId=' + selectedCompany.id, '_blank')}
+                  onClick={() => {
+                    if (selectedCompany) {
+                      localStorage.setItem('searchType', 'company');
+                      window.open('/pitch-generator?companyId=' + selectedCompany.id, '_blank');
+                    }
+                  }}
                 >
                   Generate SDR Email
                 </Button>

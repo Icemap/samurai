@@ -429,6 +429,9 @@ export default function LinkedInSearchPage() {
   };
 
   const handleProfileSelect = (profile) => {
+    // Store the profile data in localStorage
+    localStorage.setItem('selectedProfileData', JSON.stringify(profile));
+    localStorage.setItem('searchType', 'linkedin');
     setSelectedProfile(profile);
   };
 
@@ -731,7 +734,12 @@ export default function LinkedInSearchPage() {
               <CardActions sx={{ justifyContent: 'flex-end', p: 2, borderTop: 1, borderColor: 'divider' }}>
                 <Button
                   variant="contained"
-                  onClick={() => window.open('/pitch-generator?profileId=' + selectedProfile.id, '_blank')}
+                  onClick={() => {
+                    if (selectedProfile) {
+                      localStorage.setItem('searchType', 'linkedin');
+                      window.open('/pitch-generator?profileId=' + selectedProfile.id, '_blank');
+                    }
+                  }}
                 >
                   Generate SDR Email
                 </Button>
