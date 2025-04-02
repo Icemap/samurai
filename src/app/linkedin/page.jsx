@@ -53,135 +53,344 @@ import {
 const mockProfiles = [
   {
     id: 1,
-    name: 'Sarah Johnson',
-    title: 'Chief Technology Officer',
-    company: 'Acme Corporation',
-    email: 's.johnson@acme.com',
-    linkedin: 'linkedin.com/in/sarahjohnson',
-    location: 'New York, USA',
+    name: 'Jennifer Zhang',
+    title: 'Senior Director of AI/ML',
+    company: 'Apple Inc.',
+    email: 'j.zhang@apple.com',
+    linkedin: 'linkedin.com/in/jenniferzhang',
+    location: 'Cupertino, California',
     experience: [
       {
-        title: 'Chief Technology Officer',
-        company: 'Acme Corporation',
-        duration: '2018 - Present',
-        description: 'Responsible for company technology strategy and product development, managing a team of 100 engineers.'
-      },
-      {
-        title: 'VP of Engineering',
-        company: 'TechCorp',
-        duration: '2015 - 2018',
-        description: 'Led multiple key projects, including core product refactoring.'
-      },
-      {
-        title: 'Senior Software Engineer',
-        company: 'Innovation Labs',
-        duration: '2010 - 2015',
-        description: 'Developed enterprise software solutions focused on cloud computing and big data analytics.'
-      }
-    ],
-    education: [
-      {
-        degree: 'Master of Computer Science',
-        school: 'Stanford University',
-        year: '2010'
-      },
-      {
-        degree: 'Bachelor of Computer Science',
-        school: 'MIT',
-        year: '2008'
-      }
-    ],
-    skills: ['Technical Leadership', 'Software Architecture', 'Product Strategy', 'AI/ML', 'Cloud Computing'],
-    connections: 2740,
-    interests: ['Technology Innovation', 'Entrepreneurship', 'Artificial Intelligence']
-  },
-  {
-    id: 2,
-    name: 'Michael Chen',
-    title: 'Director of Sales',
-    company: 'Globex Corporation',
-    email: 'michael.chen@globex.com',
-    linkedin: 'linkedin.com/in/michaelchen',
-    location: 'Chicago, USA',
-    experience: [
-      {
-        title: 'Director of Sales',
-        company: 'Globex Corporation',
-        duration: '2019 - Present',
-        description: 'Leading North American sales team, exceeding annual sales targets.'
-      },
-      {
-        title: 'Regional Sales Manager',
-        company: 'Initech',
-        duration: '2016 - 2019',
-        description: 'Managed Western regional sales team, responsible for client relationships and new business development.'
-      },
-      {
-        title: 'Account Executive',
-        company: 'Sales Solutions Inc',
-        duration: '2012 - 2016',
-        description: 'Managed key enterprise accounts, responsible for the full sales cycle.'
-      }
-    ],
-    education: [
-      {
-        degree: 'MBA',
-        school: 'University of Chicago',
-        year: '2012'
-      },
-      {
-        degree: 'Bachelor of Marketing',
-        school: 'University of Michigan',
-        year: '2010'
-      }
-    ],
-    skills: ['Sales Management', 'Negotiation', 'Client Relations', 'CRM', 'Sales Strategy'],
-    connections: 3150,
-    interests: ['Sales Leadership', 'Business Strategy', 'SaaS']
-  },
-  {
-    id: 3,
-    name: 'Emily Rodriguez',
-    title: 'VP of Product',
-    company: 'Soylent Corp',
-    email: 'e.rodriguez@soylent.com',
-    linkedin: 'linkedin.com/in/emilyrodriguez',
-    location: 'Los Angeles, USA',
-    experience: [
-      {
-        title: 'VP of Product',
-        company: 'Soylent Corp',
+        title: 'Senior Director of AI/ML',
+        company: 'Apple Inc.',
         duration: '2020 - Present',
-        description: 'Responsible for product strategy, roadmap, and new product development.'
+        description: 'Leading AI/ML initiatives across Apple products, focusing on on-device machine learning and privacy-preserving AI technologies.'
       },
       {
-        title: 'Senior Product Manager',
-        company: 'Food Innovations Inc',
+        title: 'Director of Machine Learning',
+        company: 'Apple Inc.',
         duration: '2017 - 2020',
-        description: 'Managed multiple product lines from concept to market.'
+        description: 'Led the development of machine learning features for iOS and Siri.'
       },
       {
-        title: 'Product Manager',
-        company: 'Consumer Goods Co',
+        title: 'Senior Machine Learning Engineer',
+        company: 'Google',
         duration: '2014 - 2017',
-        description: 'Responsible for mid-size consumer product lifecycle management.'
+        description: 'Worked on Google Search ranking algorithms and ML infrastructure.'
       }
     ],
     education: [
       {
-        degree: 'MBA',
-        school: 'UCLA',
+        degree: 'Ph.D. in Computer Science',
+        school: 'Stanford University',
         year: '2014'
       },
       {
-        degree: 'Bachelor of Nutrition',
-        school: 'UC Davis',
+        degree: 'M.S. in Computer Science',
+        school: 'UC Berkeley',
+        year: '2009'
+      }
+    ],
+    skills: ['Machine Learning', 'Artificial Intelligence', 'iOS Development', 'Privacy-Preserving ML', 'Team Leadership'],
+    connections: 4200,
+    interests: ['AI Ethics', 'Privacy in Technology', 'Mobile Computing']
+  },
+  {
+    id: 2,
+    name: 'David Anderson',
+    title: 'Principal Software Engineer',
+    company: 'Google',
+    email: 'd.anderson@google.com',
+    linkedin: 'linkedin.com/in/davidanderson',
+    location: 'Mountain View, California',
+    experience: [
+      {
+        title: 'Principal Software Engineer',
+        company: 'Google',
+        duration: '2019 - Present',
+        description: 'Leading development of core Google Cloud Platform services and infrastructure.'
+      },
+      {
+        title: 'Senior Software Engineer',
+        company: 'Google',
+        duration: '2015 - 2019',
+        description: 'Worked on Google Kubernetes Engine and container orchestration systems.'
+      }
+    ],
+    education: [
+      {
+        degree: 'M.S. in Computer Science',
+        school: 'MIT',
+        year: '2015'
+      }
+    ],
+    skills: ['Distributed Systems', 'Cloud Architecture', 'Kubernetes', 'Go', 'System Design'],
+    connections: 3800,
+    interests: ['Cloud Computing', 'Open Source', 'Distributed Systems']
+  },
+  {
+    id: 3,
+    name: 'Sarah Martinez',
+    title: 'Senior Product Manager, AWS',
+    company: 'Amazon',
+    email: 's.martinez@amazon.com',
+    linkedin: 'linkedin.com/in/sarahmartinez',
+    location: 'Seattle, Washington',
+    experience: [
+      {
+        title: 'Senior Product Manager, AWS',
+        company: 'Amazon',
+        duration: '2021 - Present',
+        description: 'Leading product strategy for AWS compute services.'
+      },
+      {
+        title: 'Product Manager',
+        company: 'Microsoft',
+        duration: '2018 - 2021',
+        description: 'Managed Azure cloud services product line.'
+      }
+    ],
+    education: [
+      {
+        degree: 'MBA',
+        school: 'Harvard Business School',
+        year: '2018'
+      }
+    ],
+    skills: ['Product Management', 'Cloud Services', 'Strategy', 'Technical Product Management'],
+    connections: 3500,
+    interests: ['Cloud Computing', 'Product Innovation', 'Digital Transformation']
+  },
+  {
+    id: 4,
+    name: 'Michael Kim',
+    title: 'Design Director',
+    company: 'Apple Inc.',
+    email: 'm.kim@apple.com',
+    linkedin: 'linkedin.com/in/michaelkim',
+    location: 'Cupertino, California',
+    experience: [
+      {
+        title: 'Design Director',
+        company: 'Apple Inc.',
+        duration: '2018 - Present',
+        description: 'Leading design strategy for Apple Services products.'
+      },
+      {
+        title: 'Senior UX Designer',
+        company: 'Apple Inc.',
+        duration: '2015 - 2018',
+        description: 'Designed user experiences for iOS applications.'
+      }
+    ],
+    education: [
+      {
+        degree: 'Master of Design',
+        school: 'Rhode Island School of Design',
+        year: '2015'
+      }
+    ],
+    skills: ['UX Design', 'Product Design', 'Design Systems', 'Design Leadership'],
+    connections: 2900,
+    interests: ['Design Innovation', 'User Experience', 'Digital Product Design']
+  },
+  {
+    id: 5,
+    name: 'Rachel Cohen',
+    title: 'Research Scientist',
+    company: 'Google',
+    email: 'r.cohen@google.com',
+    linkedin: 'linkedin.com/in/rachelcohen',
+    location: 'Mountain View, California',
+    experience: [
+      {
+        title: 'Research Scientist',
+        company: 'Google',
+        duration: '2020 - Present',
+        description: 'Conducting research in natural language processing and large language models.'
+      },
+      {
+        title: 'Research Engineer',
+        company: 'OpenAI',
+        duration: '2018 - 2020',
+        description: 'Worked on transformer architecture improvements and training efficiency.'
+      }
+    ],
+    education: [
+      {
+        degree: 'Ph.D. in Computer Science',
+        school: 'Carnegie Mellon University',
+        year: '2018'
+      }
+    ],
+    skills: ['Machine Learning', 'NLP', 'Deep Learning', 'Python', 'Research'],
+    connections: 2600,
+    interests: ['AI Research', 'Language Models', 'Machine Learning']
+  },
+  {
+    id: 6,
+    name: 'James Wilson',
+    title: 'Principal Solutions Architect',
+    company: 'Amazon',
+    email: 'j.wilson@amazon.com',
+    linkedin: 'linkedin.com/in/jameswilson',
+    location: 'Seattle, Washington',
+    experience: [
+      {
+        title: 'Principal Solutions Architect',
+        company: 'Amazon',
+        duration: '2019 - Present',
+        description: 'Architecting large-scale AWS solutions for enterprise customers.'
+      },
+      {
+        title: 'Senior Solutions Architect',
+        company: 'AWS',
+        duration: '2016 - 2019',
+        description: 'Designed and implemented cloud architecture solutions.'
+      }
+    ],
+    education: [
+      {
+        degree: 'M.S. in Software Engineering',
+        school: 'University of Washington',
+        year: '2016'
+      }
+    ],
+    skills: ['Cloud Architecture', 'AWS', 'Solution Design', 'Enterprise Architecture'],
+    connections: 4100,
+    interests: ['Cloud Computing', 'Enterprise Architecture', 'Digital Transformation']
+  },
+  {
+    id: 7,
+    name: 'Emily Patel',
+    title: 'Privacy Engineering Manager',
+    company: 'Apple Inc.',
+    email: 'e.patel@apple.com',
+    linkedin: 'linkedin.com/in/emilypatel',
+    location: 'Cupertino, California',
+    experience: [
+      {
+        title: 'Privacy Engineering Manager',
+        company: 'Apple Inc.',
+        duration: '2021 - Present',
+        description: 'Leading privacy engineering initiatives across Apple services.'
+      },
+      {
+        title: 'Senior Privacy Engineer',
+        company: 'Apple Inc.',
+        duration: '2018 - 2021',
+        description: 'Developed privacy-preserving features for iOS.'
+      }
+    ],
+    education: [
+      {
+        degree: 'M.S. in Information Security',
+        school: 'Georgia Tech',
+        year: '2018'
+      }
+    ],
+    skills: ['Privacy Engineering', 'Information Security', 'iOS Development', 'Cryptography'],
+    connections: 2800,
+    interests: ['Digital Privacy', 'Security Engineering', 'Mobile Security']
+  },
+  {
+    id: 8,
+    name: 'Thomas Lee',
+    title: 'Senior Engineering Manager',
+    company: 'Google',
+    email: 't.lee@google.com',
+    linkedin: 'linkedin.com/in/thomaslee',
+    location: 'Mountain View, California',
+    experience: [
+      {
+        title: 'Senior Engineering Manager',
+        company: 'Google',
+        duration: '2020 - Present',
+        description: 'Managing Chrome browser development team.'
+      },
+      {
+        title: 'Software Engineering Manager',
+        company: 'Google',
+        duration: '2017 - 2020',
+        description: 'Led Chrome security features development.'
+      }
+    ],
+    education: [
+      {
+        degree: 'B.S. in Computer Science',
+        school: 'University of Illinois at Urbana-Champaign',
         year: '2012'
       }
     ],
-    skills: ['Product Management', 'Market Analysis', 'Consumer Insights', 'Product Development', 'Team Leadership'],
-    connections: 2580,
-    interests: ['Sustainable Food', 'Consumer Behavior', 'Product Innovation']
+    skills: ['Engineering Management', 'Browser Development', 'Web Security', 'Team Leadership'],
+    connections: 3300,
+    interests: ['Web Technologies', 'Browser Security', 'Engineering Leadership']
+  },
+  {
+    id: 9,
+    name: 'Lisa Brown',
+    title: 'Head of Retail Analytics',
+    company: 'Amazon',
+    email: 'l.brown@amazon.com',
+    linkedin: 'linkedin.com/in/lisabrown',
+    location: 'Seattle, Washington',
+    experience: [
+      {
+        title: 'Head of Retail Analytics',
+        company: 'Amazon',
+        duration: '2022 - Present',
+        description: 'Leading retail analytics and data science initiatives.'
+      },
+      {
+        title: 'Senior Data Scientist',
+        company: 'Amazon',
+        duration: '2019 - 2022',
+        description: 'Developed predictive models for retail operations.'
+      }
+    ],
+    education: [
+      {
+        degree: 'M.S. in Data Science',
+        school: 'Columbia University',
+        year: '2019'
+      }
+    ],
+    skills: ['Data Science', 'Retail Analytics', 'Machine Learning', 'Python', 'R'],
+    connections: 3100,
+    interests: ['Retail Technology', 'Data Analytics', 'E-commerce Innovation']
+  },
+  {
+    id: 10,
+    name: 'Robert Chen',
+    title: 'Hardware Engineering Director',
+    company: 'Apple Inc.',
+    email: 'r.chen@apple.com',
+    linkedin: 'linkedin.com/in/robertchen',
+    location: 'Cupertino, California',
+    experience: [
+      {
+        title: 'Hardware Engineering Director',
+        company: 'Apple Inc.',
+        duration: '2019 - Present',
+        description: 'Leading hardware development for Apple Watch.'
+      },
+      {
+        title: 'Senior Hardware Engineer',
+        company: 'Apple Inc.',
+        duration: '2016 - 2019',
+        description: 'Developed hardware solutions for iPhone.'
+      }
+    ],
+    education: [
+      {
+        degree: 'Ph.D. in Electrical Engineering',
+        school: 'Caltech',
+        year: '2016'
+      }
+    ],
+    skills: ['Hardware Engineering', 'Product Development', 'System Design', 'Team Leadership'],
+    connections: 2700,
+    interests: ['Wearable Technology', 'Hardware Innovation', 'Consumer Electronics']
   }
 ];
 
