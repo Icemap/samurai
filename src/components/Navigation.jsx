@@ -3,6 +3,8 @@
 import { useEffect, useState, Fragment } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTheme as useMuiTheme } from '@mui/material/styles';
+import { useTheme as useAppTheme } from './ThemeProvider';
 
 // MUI Components
 import {
@@ -66,11 +68,11 @@ function HideOnScroll(props) {
 }
 
 export default function Navigation() {
-  const theme = useTheme();
+  const theme = useMuiTheme();
+  const { isDark, setIsDark } = useAppTheme();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolledDown, setScrolledDown] = useState(false);
-  const [isDark, setIsDark] = useState(false);
   
   // Track scroll position to add shadow effect
   useEffect(() => {
@@ -84,15 +86,6 @@ export default function Navigation() {
       return () => window.removeEventListener('scroll', handleScroll);
     }
   }, []);
-
-  // Check theme on component mount (client-side only)
-  useEffect(() => {
-    if (typeof document !== 'undefined') {
-      // Check if dark mode is enabled
-      const isDarkMode = document.body?.classList.contains('dark');
-      setIsDark(isDarkMode);
-    }
-  }, []);
   
   // Handle mobile menu toggle
   const handleDrawerToggle = () => {
@@ -102,18 +95,16 @@ export default function Navigation() {
   // Toggle theme
   const toggleDarkMode = () => {
     if (typeof document !== 'undefined') {
-      const body = document.body;
-      const newIsDark = !body.classList.contains('dark');
+      const newIsDark = !isDark;
+      setIsDark(newIsDark);
       
       if (newIsDark) {
-        body.classList.add('dark');
+        document.body.classList.add('dark');
         localStorage.setItem('theme', 'dark');
       } else {
-        body.classList.remove('dark');
+        document.body.classList.remove('dark');
         localStorage.setItem('theme', 'light');
       }
-      
-      setIsDark(newIsDark);
     }
   };
   
@@ -146,8 +137,20 @@ export default function Navigation() {
                 fontWeight: 700,
                 color: 'primary.main',
                 textDecoration: 'none',
+                alignItems: 'center',
               }}
             >
+              <Box
+                component="img"
+                src="/icon.jpg"
+                alt="Logo"
+                sx={{
+                  height: 32,
+                  width: 32,
+                  mr: 1,
+                  borderRadius: 1,
+                }}
+              />
               SAMURAI
             </Typography>
 
@@ -240,8 +243,20 @@ export default function Navigation() {
                 fontWeight: 700,
                 color: 'primary.main',
                 textDecoration: 'none',
+                alignItems: 'center',
               }}
             >
+              <Box
+                component="img"
+                src="/icon.jpg"
+                alt="Logo"
+                sx={{
+                  height: 32,
+                  width: 32,
+                  mr: 1,
+                  borderRadius: 1,
+                }}
+              />
               SAMURAI
             </Typography>
             

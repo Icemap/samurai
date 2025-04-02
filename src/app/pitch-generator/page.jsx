@@ -351,6 +351,12 @@ function PitchGeneratorContent() {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Enter generation prompt..."
+                sx={{
+                  width: '100%',
+                  '& .MuiInputBase-root': {
+                    width: '100%'
+                  }
+                }}
               />
               <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
                 You can edit the prompt as needed to add additional information

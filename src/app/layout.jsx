@@ -1,12 +1,15 @@
 import './globals.css';
 import Navigation from '../components/Navigation';
-import ThemeProvider from '../components/ThemeProvider';
+import { ThemeProvider } from '../components/ThemeProvider';
 import { Box, Container } from '@mui/material';
 import Footer from '../components/Footer';
 
 export const metadata = {
   title: 'SDR Automation Tool',
   description: 'Empower your SDR team with AI technology',
+  icons: {
+    icon: '/icon.jpg',
+  },
 };
 
 export default function RootLayout({ children }) {
