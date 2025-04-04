@@ -49,349 +49,81 @@ import {
   School as SchoolIcon
 } from '@mui/icons-material';
 
-// Mock data for demonstration
+// Import LinkedIn data
+import data1 from './data1.json';
+import data2 from './data2.json';
+import data3 from './data3.json';
+import data4 from './data4.json';
+import data5 from './data5.json';
+import data6 from './data6.json';
+import data7 from './data7.json';
+
+// Function to transform LinkedIn data to the required format
+const transformLinkedInData = (data) => {
+  // Extract skills names into array
+  const skillsArray = data.skills ? data.skills.map(skill => skill.name) : [];
+  
+  // Format experience
+  const experienceArray = (data.position || []).map(job => {
+    const startYear = job.start?.year || '';
+    const endYear = job.end?.year || 'Present';
+    const duration = `${startYear} - ${endYear}`;
+    
+    return {
+      title: job.title || '',
+      company: job.companyName || '',
+      duration: duration,
+      description: job.description || ''
+    };
+  });
+  
+  // Format education
+  const educationArray = (data.educations || []).map(edu => {
+    return {
+      degree: edu.degree || '',
+      school: edu.schoolName || '',
+      year: edu.end?.year || ''
+    };
+  });
+  
+  // Get location
+  const location = data.geo?.full || '';
+  
+  // Create email based on name (just for demo purposes since real data doesn't have email)
+  const firstName = data.firstName || '';
+  const lastName = data.lastName || '';
+  const company = (data.position && data.position.length > 0) ? data.position[0].companyName : '';
+  const email = company 
+    ? `${firstName.toLowerCase().charAt(0)}.${lastName.toLowerCase()}@${company.toLowerCase().replace(/\s+/g, '')}.com`
+    : '';
+    
+  // Construct the transformed profile
+  return {
+    id: data.id || Math.random().toString(36).substr(2, 9),
+    name: `${firstName} ${lastName}`,
+    title: data.headline || '',
+    company: company,
+    email: email,
+    linkedin: `linkedin.com/in/${data.username || ''}`,
+    location: location,
+    experience: experienceArray,
+    education: educationArray,
+    skills: skillsArray,
+    connections: Math.floor(Math.random() * 5000) + 500, // Random number for connections
+    interests: skillsArray.slice(0, 3), // Just use the first 3 skills as interests for demo
+    profilePicture: data.profilePicture || ''
+  };
+};
+
+// Combine all LinkedIn profiles
 const mockProfiles = [
-  {
-    id: 1,
-    name: 'Jennifer Zhang',
-    title: 'Senior Director of AI/ML',
-    company: 'Apple Inc.',
-    email: 'j.zhang@apple.com',
-    linkedin: 'linkedin.com/in/jenniferzhang',
-    location: 'Cupertino, California',
-    experience: [
-      {
-        title: 'Senior Director of AI/ML',
-        company: 'Apple Inc.',
-        duration: '2020 - Present',
-        description: 'Leading AI/ML initiatives across Apple products, focusing on on-device machine learning and privacy-preserving AI technologies.'
-      },
-      {
-        title: 'Director of Machine Learning',
-        company: 'Apple Inc.',
-        duration: '2017 - 2020',
-        description: 'Led the development of machine learning features for iOS and Siri.'
-      },
-      {
-        title: 'Senior Machine Learning Engineer',
-        company: 'Google',
-        duration: '2014 - 2017',
-        description: 'Worked on Google Search ranking algorithms and ML infrastructure.'
-      }
-    ],
-    education: [
-      {
-        degree: 'Ph.D. in Computer Science',
-        school: 'Stanford University',
-        year: '2014'
-      },
-      {
-        degree: 'M.S. in Computer Science',
-        school: 'UC Berkeley',
-        year: '2009'
-      }
-    ],
-    skills: ['Machine Learning', 'Artificial Intelligence', 'iOS Development', 'Privacy-Preserving ML', 'Team Leadership'],
-    connections: 4200,
-    interests: ['AI Ethics', 'Privacy in Technology', 'Mobile Computing']
-  },
-  {
-    id: 2,
-    name: 'David Anderson',
-    title: 'Principal Software Engineer',
-    company: 'Google',
-    email: 'd.anderson@google.com',
-    linkedin: 'linkedin.com/in/davidanderson',
-    location: 'Mountain View, California',
-    experience: [
-      {
-        title: 'Principal Software Engineer',
-        company: 'Google',
-        duration: '2019 - Present',
-        description: 'Leading development of core Google Cloud Platform services and infrastructure.'
-      },
-      {
-        title: 'Senior Software Engineer',
-        company: 'Google',
-        duration: '2015 - 2019',
-        description: 'Worked on Google Kubernetes Engine and container orchestration systems.'
-      }
-    ],
-    education: [
-      {
-        degree: 'M.S. in Computer Science',
-        school: 'MIT',
-        year: '2015'
-      }
-    ],
-    skills: ['Distributed Systems', 'Cloud Architecture', 'Kubernetes', 'Go', 'System Design'],
-    connections: 3800,
-    interests: ['Cloud Computing', 'Open Source', 'Distributed Systems']
-  },
-  {
-    id: 3,
-    name: 'Sarah Martinez',
-    title: 'Senior Product Manager, AWS',
-    company: 'Amazon',
-    email: 's.martinez@amazon.com',
-    linkedin: 'linkedin.com/in/sarahmartinez',
-    location: 'Seattle, Washington',
-    experience: [
-      {
-        title: 'Senior Product Manager, AWS',
-        company: 'Amazon',
-        duration: '2021 - Present',
-        description: 'Leading product strategy for AWS compute services.'
-      },
-      {
-        title: 'Product Manager',
-        company: 'Microsoft',
-        duration: '2018 - 2021',
-        description: 'Managed Azure cloud services product line.'
-      }
-    ],
-    education: [
-      {
-        degree: 'MBA',
-        school: 'Harvard Business School',
-        year: '2018'
-      }
-    ],
-    skills: ['Product Management', 'Cloud Services', 'Strategy', 'Technical Product Management'],
-    connections: 3500,
-    interests: ['Cloud Computing', 'Product Innovation', 'Digital Transformation']
-  },
-  {
-    id: 4,
-    name: 'Michael Kim',
-    title: 'Design Director',
-    company: 'Apple Inc.',
-    email: 'm.kim@apple.com',
-    linkedin: 'linkedin.com/in/michaelkim',
-    location: 'Cupertino, California',
-    experience: [
-      {
-        title: 'Design Director',
-        company: 'Apple Inc.',
-        duration: '2018 - Present',
-        description: 'Leading design strategy for Apple Services products.'
-      },
-      {
-        title: 'Senior UX Designer',
-        company: 'Apple Inc.',
-        duration: '2015 - 2018',
-        description: 'Designed user experiences for iOS applications.'
-      }
-    ],
-    education: [
-      {
-        degree: 'Master of Design',
-        school: 'Rhode Island School of Design',
-        year: '2015'
-      }
-    ],
-    skills: ['UX Design', 'Product Design', 'Design Systems', 'Design Leadership'],
-    connections: 2900,
-    interests: ['Design Innovation', 'User Experience', 'Digital Product Design']
-  },
-  {
-    id: 5,
-    name: 'Rachel Cohen',
-    title: 'Research Scientist',
-    company: 'Google',
-    email: 'r.cohen@google.com',
-    linkedin: 'linkedin.com/in/rachelcohen',
-    location: 'Mountain View, California',
-    experience: [
-      {
-        title: 'Research Scientist',
-        company: 'Google',
-        duration: '2020 - Present',
-        description: 'Conducting research in natural language processing and large language models.'
-      },
-      {
-        title: 'Research Engineer',
-        company: 'OpenAI',
-        duration: '2018 - 2020',
-        description: 'Worked on transformer architecture improvements and training efficiency.'
-      }
-    ],
-    education: [
-      {
-        degree: 'Ph.D. in Computer Science',
-        school: 'Carnegie Mellon University',
-        year: '2018'
-      }
-    ],
-    skills: ['Machine Learning', 'NLP', 'Deep Learning', 'Python', 'Research'],
-    connections: 2600,
-    interests: ['AI Research', 'Language Models', 'Machine Learning']
-  },
-  {
-    id: 6,
-    name: 'James Wilson',
-    title: 'Principal Solutions Architect',
-    company: 'Amazon',
-    email: 'j.wilson@amazon.com',
-    linkedin: 'linkedin.com/in/jameswilson',
-    location: 'Seattle, Washington',
-    experience: [
-      {
-        title: 'Principal Solutions Architect',
-        company: 'Amazon',
-        duration: '2019 - Present',
-        description: 'Architecting large-scale AWS solutions for enterprise customers.'
-      },
-      {
-        title: 'Senior Solutions Architect',
-        company: 'AWS',
-        duration: '2016 - 2019',
-        description: 'Designed and implemented cloud architecture solutions.'
-      }
-    ],
-    education: [
-      {
-        degree: 'M.S. in Software Engineering',
-        school: 'University of Washington',
-        year: '2016'
-      }
-    ],
-    skills: ['Cloud Architecture', 'AWS', 'Solution Design', 'Enterprise Architecture'],
-    connections: 4100,
-    interests: ['Cloud Computing', 'Enterprise Architecture', 'Digital Transformation']
-  },
-  {
-    id: 7,
-    name: 'Emily Patel',
-    title: 'Privacy Engineering Manager',
-    company: 'Apple Inc.',
-    email: 'e.patel@apple.com',
-    linkedin: 'linkedin.com/in/emilypatel',
-    location: 'Cupertino, California',
-    experience: [
-      {
-        title: 'Privacy Engineering Manager',
-        company: 'Apple Inc.',
-        duration: '2021 - Present',
-        description: 'Leading privacy engineering initiatives across Apple services.'
-      },
-      {
-        title: 'Senior Privacy Engineer',
-        company: 'Apple Inc.',
-        duration: '2018 - 2021',
-        description: 'Developed privacy-preserving features for iOS.'
-      }
-    ],
-    education: [
-      {
-        degree: 'M.S. in Information Security',
-        school: 'Georgia Tech',
-        year: '2018'
-      }
-    ],
-    skills: ['Privacy Engineering', 'Information Security', 'iOS Development', 'Cryptography'],
-    connections: 2800,
-    interests: ['Digital Privacy', 'Security Engineering', 'Mobile Security']
-  },
-  {
-    id: 8,
-    name: 'Thomas Lee',
-    title: 'Senior Engineering Manager',
-    company: 'Google',
-    email: 't.lee@google.com',
-    linkedin: 'linkedin.com/in/thomaslee',
-    location: 'Mountain View, California',
-    experience: [
-      {
-        title: 'Senior Engineering Manager',
-        company: 'Google',
-        duration: '2020 - Present',
-        description: 'Managing Chrome browser development team.'
-      },
-      {
-        title: 'Software Engineering Manager',
-        company: 'Google',
-        duration: '2017 - 2020',
-        description: 'Led Chrome security features development.'
-      }
-    ],
-    education: [
-      {
-        degree: 'B.S. in Computer Science',
-        school: 'University of Illinois at Urbana-Champaign',
-        year: '2012'
-      }
-    ],
-    skills: ['Engineering Management', 'Browser Development', 'Web Security', 'Team Leadership'],
-    connections: 3300,
-    interests: ['Web Technologies', 'Browser Security', 'Engineering Leadership']
-  },
-  {
-    id: 9,
-    name: 'Lisa Brown',
-    title: 'Head of Retail Analytics',
-    company: 'Amazon',
-    email: 'l.brown@amazon.com',
-    linkedin: 'linkedin.com/in/lisabrown',
-    location: 'Seattle, Washington',
-    experience: [
-      {
-        title: 'Head of Retail Analytics',
-        company: 'Amazon',
-        duration: '2022 - Present',
-        description: 'Leading retail analytics and data science initiatives.'
-      },
-      {
-        title: 'Senior Data Scientist',
-        company: 'Amazon',
-        duration: '2019 - 2022',
-        description: 'Developed predictive models for retail operations.'
-      }
-    ],
-    education: [
-      {
-        degree: 'M.S. in Data Science',
-        school: 'Columbia University',
-        year: '2019'
-      }
-    ],
-    skills: ['Data Science', 'Retail Analytics', 'Machine Learning', 'Python', 'R'],
-    connections: 3100,
-    interests: ['Retail Technology', 'Data Analytics', 'E-commerce Innovation']
-  },
-  {
-    id: 10,
-    name: 'Robert Chen',
-    title: 'Hardware Engineering Director',
-    company: 'Apple Inc.',
-    email: 'r.chen@apple.com',
-    linkedin: 'linkedin.com/in/robertchen',
-    location: 'Cupertino, California',
-    experience: [
-      {
-        title: 'Hardware Engineering Director',
-        company: 'Apple Inc.',
-        duration: '2019 - Present',
-        description: 'Leading hardware development for Apple Watch.'
-      },
-      {
-        title: 'Senior Hardware Engineer',
-        company: 'Apple Inc.',
-        duration: '2016 - 2019',
-        description: 'Developed hardware solutions for iPhone.'
-      }
-    ],
-    education: [
-      {
-        degree: 'Ph.D. in Electrical Engineering',
-        school: 'Caltech',
-        year: '2016'
-      }
-    ],
-    skills: ['Hardware Engineering', 'Product Development', 'System Design', 'Team Leadership'],
-    connections: 2700,
-    interests: ['Wearable Technology', 'Hardware Innovation', 'Consumer Electronics']
-  }
+  transformLinkedInData(data1),
+  transformLinkedInData(data2),
+  transformLinkedInData(data3),
+  transformLinkedInData(data4),
+  transformLinkedInData(data5),
+  transformLinkedInData(data6),
+  transformLinkedInData(data7)
 ];
 
 export default function LinkedInSearchPage() {
@@ -416,10 +148,10 @@ export default function LinkedInSearchPage() {
       const filteredResults = mockProfiles.filter(profile => {
         const query = data.query.toLowerCase();
         return (
-          profile.name.toLowerCase().includes(query) || 
-          profile.title.toLowerCase().includes(query) || 
-          profile.company.toLowerCase().includes(query) ||
-          profile.skills.some(skill => skill.toLowerCase().includes(query))
+          profile.name?.toLowerCase().includes(query) || 
+          profile.title?.toLowerCase().includes(query) || 
+          profile.company?.toLowerCase().includes(query) ||
+          (Array.isArray(profile.skills) && profile.skills.some(skill => skill.toLowerCase().includes(query)))
         );
       });
       
@@ -549,6 +281,7 @@ export default function LinkedInSearchPage() {
                               bgcolor: 'primary.lighter', 
                               color: 'primary.dark' 
                             }}
+                            src={profile.profilePicture}
                           >
                             {getInitials(profile.name)}
                           </Avatar>
@@ -561,10 +294,10 @@ export default function LinkedInSearchPage() {
                           }
                           secondary={
                             <>
-                              <Typography variant="body2" color="text.primary">
+                              <Typography variant="body2" color="text.primary" component="span">
                                 {profile.title}
                               </Typography>
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography variant="body2" color="text.secondary" component="span" sx={{ display: 'block' }}>
                                 {profile.company}
                               </Typography>
                             </>
@@ -610,6 +343,7 @@ export default function LinkedInSearchPage() {
                       color: 'primary.dark',
                       fontSize: '1.5rem'
                     }}
+                    src={selectedProfile.profilePicture}
                   >
                     {getInitials(selectedProfile.name)}
                   </Avatar>
@@ -649,13 +383,19 @@ export default function LinkedInSearchPage() {
                   <Grid item xs={12} sm={6}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <PersonIcon fontSize="small" color="action" sx={{ mr: 1 }} />
-                      <Typography variant="body2">{selectedProfile.connections} connections</Typography>
+                      <Typography variant="body2">
+                        {selectedProfile.connections ? `${selectedProfile.connections} connections` : 'Connections unknown'}
+                      </Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <SchoolIcon fontSize="small" color="action" sx={{ mr: 1 }} />
-                      <Typography variant="body2">{selectedProfile.education[0].school}</Typography>
+                      <Typography variant="body2">
+                        {selectedProfile.education && selectedProfile.education.length > 0 
+                          ? selectedProfile.education[0].school 
+                          : 'No education listed'}
+                      </Typography>
                     </Box>
                   </Grid>
                 </Grid>
@@ -665,27 +405,35 @@ export default function LinkedInSearchPage() {
                   <Typography variant="h6" gutterBottom>
                     Work Experience
                   </Typography>
-                  <Timeline position="right" sx={{ p: 0, m: 0 }}>
-                    {selectedProfile.experience.map((exp, index) => (
-                      <TimelineItem key={index}>
-                        <TimelineSeparator>
-                          <TimelineDot color="primary" />
-                          {index < selectedProfile.experience.length - 1 && <TimelineConnector />}
-                        </TimelineSeparator>
-                        <TimelineContent sx={{ py: '12px', px: 2 }}>
-                          <Typography variant="subtitle2" component="span">
-                            {exp.title}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {exp.company} · {exp.duration}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                            {exp.description}
-                          </Typography>
-                        </TimelineContent>
-                      </TimelineItem>
-                    ))}
-                  </Timeline>
+                  {selectedProfile.experience && selectedProfile.experience.length > 0 ? (
+                    <Timeline position="right" sx={{ p: 0, m: 0 }}>
+                      {selectedProfile.experience.map((exp, index) => (
+                        <TimelineItem key={index}>
+                          <TimelineSeparator>
+                            <TimelineDot color="primary" />
+                            {index < selectedProfile.experience.length - 1 && <TimelineConnector />}
+                          </TimelineSeparator>
+                          <TimelineContent sx={{ py: '12px', px: 2 }}>
+                            <Typography variant="subtitle2" component="span">
+                              {exp.title}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {exp.company} {exp.duration ? `· ${exp.duration}` : ''}
+                            </Typography>
+                            {exp.description && (
+                              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                {exp.description}
+                              </Typography>
+                            )}
+                          </TimelineContent>
+                        </TimelineItem>
+                      ))}
+                    </Timeline>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No work experience information available
+                    </Typography>
+                  )}
                 </Box>
 
                 {/* Education */}
@@ -693,24 +441,30 @@ export default function LinkedInSearchPage() {
                   <Typography variant="h6" gutterBottom>
                     Education
                   </Typography>
-                  <Timeline position="right" sx={{ p: 0, m: 0 }}>
-                    {selectedProfile.education.map((edu, index) => (
-                      <TimelineItem key={index}>
-                        <TimelineSeparator>
-                          <TimelineDot color="secondary" />
-                          {index < selectedProfile.education.length - 1 && <TimelineConnector />}
-                        </TimelineSeparator>
-                        <TimelineContent sx={{ py: '12px', px: 2 }}>
-                          <Typography variant="subtitle2" component="span">
-                            {edu.degree}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {edu.school} · {edu.year}
-                          </Typography>
-                        </TimelineContent>
-                      </TimelineItem>
-                    ))}
-                  </Timeline>
+                  {selectedProfile.education && selectedProfile.education.length > 0 ? (
+                    <Timeline position="right" sx={{ p: 0, m: 0 }}>
+                      {selectedProfile.education.map((edu, index) => (
+                        <TimelineItem key={index}>
+                          <TimelineSeparator>
+                            <TimelineDot color="secondary" />
+                            {index < selectedProfile.education.length - 1 && <TimelineConnector />}
+                          </TimelineSeparator>
+                          <TimelineContent sx={{ py: '12px', px: 2 }}>
+                            <Typography variant="subtitle2" component="span">
+                              {edu.degree}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {edu.school} {edu.year ? `· ${edu.year}` : ''}
+                            </Typography>
+                          </TimelineContent>
+                        </TimelineItem>
+                      ))}
+                    </Timeline>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No education information available
+                    </Typography>
+                  )}
                 </Box>
 
                 {/* Skills */}
@@ -718,16 +472,22 @@ export default function LinkedInSearchPage() {
                   <Typography variant="h6" gutterBottom>
                     Skills
                   </Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {selectedProfile.skills.map((skill, index) => (
-                      <Chip 
-                        key={index} 
-                        label={skill}
-                        variant="outlined"
-                        size="small"
-                      />
-                    ))}
-                  </Box>
+                  {selectedProfile.skills && selectedProfile.skills.length > 0 ? (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                      {selectedProfile.skills.map((skill, index) => (
+                        <Chip 
+                          key={index} 
+                          label={skill}
+                          variant="outlined"
+                          size="small"
+                        />
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No skills information available
+                    </Typography>
+                  )}
                 </Box>
               </CardContent>
               
