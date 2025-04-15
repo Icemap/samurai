@@ -272,7 +272,6 @@ export default function LinkedInSearchPage() {
                           </InputAdornment>
                         ) : null
                       }}
-                      helperText="Enter a LinkedIn profile URL or username to fetch their profile data"
                     />
                   )}
                 />
