@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import React from 'react';
+import axios from 'axios';
 
 // MUI Components
 import {
@@ -49,16 +50,57 @@ import {
   School as SchoolIcon
 } from '@mui/icons-material';
 
-// Import LinkedIn data
-import data1 from './data1.json';
-import data2 from './data2.json';
-import data3 from './data3.json';
-import data4 from './data4.json';
-import data5 from './data5.json';
-import data6 from './data6.json';
-import data7 from './data7.json';
+// Function to transform LinkedIn data from Proxycurl API to the required format
+const transformProxycurlData = (data) => {
+  // Extract skills
+  const skillsArray = data.certifications ? data.certifications.map(cert => cert.name) : [];
+  
+  // Format experience
+  const experienceArray = (data.experiences || []).map(job => {
+    const startYear = job.starts_at?.year || '';
+    const endYear = job.ends_at?.year || 'Present';
+    const duration = `${startYear} - ${endYear}`;
+    
+    return {
+      title: job.title || '',
+      company: job.company || '',
+      duration: duration,
+      description: job.description || ''
+    };
+  });
+  
+  // Format education
+  const educationArray = (data.education || []).map(edu => {
+    return {
+      degree: edu.degree_name || '',
+      school: edu.school || '',
+      year: edu.ends_at?.year || ''
+    };
+  });
+  
+  // Generate email (for demo purposes)
+  const email = data.public_identifier ? 
+    `${data.first_name.toLowerCase()}.${data.last_name.toLowerCase()}@${data.experiences && data.experiences.length > 0 ? data.experiences[0].company.toLowerCase().replace(/\s+/g, '') : 'company'}.com` : '';
+  
+  // Construct the transformed profile
+  return {
+    id: data.public_identifier || Math.random().toString(36).substr(2, 9),
+    name: data.full_name || `${data.first_name || ''} ${data.last_name || ''}`,
+    title: data.headline || '',
+    company: data.experiences && data.experiences.length > 0 ? data.experiences[0].company : '',
+    email: email,
+    linkedin: `linkedin.com/in/${data.public_identifier || ''}`,
+    location: `${data.city || ''}, ${data.state || ''}, ${data.country_full_name || ''}`.replace(/, ,/g, ',').replace(/^, /, '').replace(/, $/, ''),
+    experience: experienceArray,
+    education: educationArray,
+    skills: skillsArray,
+    connections: data.connections || 0,
+    interests: skillsArray.slice(0, 3),
+    profilePicture: data.profile_pic_url || ''
+  };
+};
 
-// Function to transform LinkedIn data to the required format
+// Function to transform LinkedIn data from the local JSON files
 const transformLinkedInData = (data) => {
   // Extract skills names into array
   const skillsArray = data.skills ? data.skills.map(skill => skill.name) : [];
@@ -115,21 +157,11 @@ const transformLinkedInData = (data) => {
   };
 };
 
-// Combine all LinkedIn profiles
-const mockProfiles = [
-  transformLinkedInData(data1),
-  transformLinkedInData(data2),
-  transformLinkedInData(data3),
-  transformLinkedInData(data4),
-  transformLinkedInData(data5),
-  transformLinkedInData(data6),
-  transformLinkedInData(data7)
-];
-
 export default function LinkedInSearchPage() {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(null);
+  const [apiError, setApiError] = useState(null);
   const { control, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
       query: ''
@@ -138,26 +170,47 @@ export default function LinkedInSearchPage() {
 
   const searchQuery = watch('query');
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     setIsSearching(true);
     setSelectedProfile(null);
+    setApiError(null);
     
-    // Simulate API call
-    setTimeout(() => {
-      // Filter profiles based on search criteria
-      const filteredResults = mockProfiles.filter(profile => {
-        const query = data.query.toLowerCase();
-        return (
-          profile.name?.toLowerCase().includes(query) || 
-          profile.title?.toLowerCase().includes(query) || 
-          profile.company?.toLowerCase().includes(query) ||
-          (Array.isArray(profile.skills) && profile.skills.some(skill => skill.toLowerCase().includes(query)))
-        );
+    try {
+      // Format LinkedIn URL or extract username
+      let linkedinProfileUrl = data.query;
+      if (!linkedinProfileUrl.startsWith('http')) {
+        if (linkedinProfileUrl.startsWith('linkedin.com')) {
+          linkedinProfileUrl = 'https://' + linkedinProfileUrl;
+        } else if (!linkedinProfileUrl.includes('linkedin.com')) {
+          // Assume it's just a username
+          linkedinProfileUrl = 'https://linkedin.com/in/' + linkedinProfileUrl.replace(/^@/, '');
+        }
+      }
+      
+      // Use our internal API route instead of calling Proxycurl directly
+      // This solves CORS issues by proxying the request through our server
+      const response = await axios.get('/api/linkedin/profile', {
+        params: {
+          linkedin_profile_url: linkedinProfileUrl,
+        }
       });
       
-      setSearchResults(filteredResults);
+      if (response.data) {
+        if (response.data.error) {
+          throw new Error(response.data.error);
+        }
+        const transformedProfile = transformProxycurlData(response.data);
+        setSearchResults([transformedProfile]);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error("Error fetching LinkedIn profile:", error);
+      setApiError(error.response?.data?.error || error.message || "Failed to fetch LinkedIn profile. Please check the URL and try again.");
+      setSearchResults([]);
+    } finally {
       setIsSearching(false);
-    }, 800);
+    }
   };
 
   const handleProfileSelect = (profile) => {
@@ -178,7 +231,7 @@ export default function LinkedInSearchPage() {
         LinkedIn User Search
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Search for potential prospects' LinkedIn information, including email, position, and work experience
+        Search for potential prospects by entering their LinkedIn URL or username (e.g., linkedin.com/in/username or just username)
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mb: 4, width: '100%', maxWidth: '100%' }}>
@@ -194,7 +247,7 @@ export default function LinkedInSearchPage() {
                     <TextField
                       {...field}
                       fullWidth
-                      placeholder="Enter name, position, company, or skills"
+                      placeholder="Enter LinkedIn URL or username (e.g., linkedin.com/in/cheesewong or cheesewong)"
                       sx={{ 
                         '& .MuiOutlinedInput-root': {
                           borderTopRightRadius: 0,
@@ -219,6 +272,7 @@ export default function LinkedInSearchPage() {
                           </InputAdornment>
                         ) : null
                       }}
+                      helperText="Enter a LinkedIn profile URL or username to fetch their profile data"
                     />
                   )}
                 />
@@ -242,6 +296,21 @@ export default function LinkedInSearchPage() {
           </Grid>
         </Grid>
       </Box>
+
+      {apiError && (
+        <Paper 
+          variant="outlined" 
+          sx={{ 
+            p: 3, 
+            mb: 3,
+            bgcolor: 'error.lighter',
+            color: 'error.main',
+            borderColor: 'error.main'
+          }}
+        >
+          <Typography variant="body1">{apiError}</Typography>
+        </Paper>
+      )}
 
       <Grid container spacing={4} sx={{ width: '100%' }} justifyContent="center">
         {/* Search Results */}
@@ -322,9 +391,23 @@ export default function LinkedInSearchPage() {
             >
               <SearchIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
               <Typography variant="subtitle1" fontWeight="medium">No search results</Typography>
-              <Typography variant="body2" color="text.secondary">
-                Try searching with different keywords.
+              <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
+                Please enter a valid LinkedIn profile URL or username.
               </Typography>
+              <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
+                Examples:
+              </Typography>
+              <Box sx={{ mt: 1, width: '100%', maxWidth: '400px' }}>
+                <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace', mb: 0.5 }}>
+                  • https://linkedin.com/in/cheesewong
+                </Typography>
+                <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace', mb: 0.5 }}>
+                  • linkedin.com/in/cheesewong
+                </Typography>
+                <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace' }}>
+                  • cheesewong
+                </Typography>
+              </Box>
             </Paper>
           )}
         </Grid>
