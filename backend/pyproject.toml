@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "samurai-backend"
+version = "0.1.0"
+description = ""
+package-mode = false
+authors = ["Cheese <cheese.javaee@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-dotenv = "^1.1.0"
+fastapi = "^0.115.12"
+click = "^8.1.8"
+sqlmodel = "^0.0.24"
+uvicorn = "^0.34.2"
+pydantic-settings = "^2.9.1"
+authlib = "^1.5.2"
+itsdangerous = "^2.2.0"
+httpx = "^0.28.1"
+socksio = "^1.0.0"
+alembic = "^1.15.2"
+pymysql = "^1.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
