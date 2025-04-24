@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import React from 'react';
 import axios from 'axios';
+import { reportUserAction } from '../../services/analytics';
+import ProtectedRoute from '../../components/ProtectedRoute';
 
 // MUI Components
 import {
@@ -187,6 +189,20 @@ export default function LinkedInSearchPage() {
         }
       }
       
+      // Report LinkedIn search action
+      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        if (key) acc[key] = value;
+        return acc;
+      }, {});
+      
+      const userData = {
+        email: cookies.user_email || '',
+        name: cookies.user_name || ''
+      };
+      
+      await reportUserAction('linkedin_search', userData);
+      
       // Use our internal API route instead of calling Proxycurl directly
       // This solves CORS issues by proxying the request through our server
       const response = await axios.get('/api/linkedin/profile', {
@@ -226,12 +242,13 @@ export default function LinkedInSearchPage() {
   };
 
   return (
+    <ProtectedRoute>
     <Box sx={{ py: 3, width: '100%', maxWidth: '100%' }}>
       <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
         LinkedIn User Search
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Search for potential prospects by entering their LinkedIn URL or username (e.g., linkedin.com/in/username or just username)
+          Search for potential prospects by entering their LinkedIn URL or username (e.g., linkedin.com/in/username or just username)
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mb: 4, width: '100%', maxWidth: '100%' }}>
@@ -247,7 +264,7 @@ export default function LinkedInSearchPage() {
                     <TextField
                       {...field}
                       fullWidth
-                      placeholder="Enter LinkedIn URL or username (e.g., linkedin.com/in/cheesewong or cheesewong)"
+                        placeholder="Enter LinkedIn URL or username (e.g., linkedin.com/in/cheesewong or cheesewong)"
                       sx={{ 
                         '& .MuiOutlinedInput-root': {
                           borderTopRightRadius: 0,
@@ -296,20 +313,20 @@ export default function LinkedInSearchPage() {
         </Grid>
       </Box>
 
-      {apiError && (
-        <Paper 
-          variant="outlined" 
-          sx={{ 
-            p: 3, 
-            mb: 3,
-            bgcolor: 'error.lighter',
-            color: 'error.main',
-            borderColor: 'error.main'
-          }}
-        >
-          <Typography variant="body1">{apiError}</Typography>
-        </Paper>
-      )}
+        {apiError && (
+          <Paper 
+            variant="outlined" 
+            sx={{ 
+              p: 3, 
+              mb: 3,
+              bgcolor: 'error.lighter',
+              color: 'error.main',
+              borderColor: 'error.main'
+            }}
+          >
+            <Typography variant="body1">{apiError}</Typography>
+          </Paper>
+        )}
 
       <Grid container spacing={4} sx={{ width: '100%' }} justifyContent="center">
         {/* Search Results */}
@@ -349,7 +366,7 @@ export default function LinkedInSearchPage() {
                               bgcolor: 'primary.lighter', 
                               color: 'primary.dark' 
                             }}
-                            src={profile.profilePicture}
+                              src={profile.profilePicture}
                           >
                             {getInitials(profile.name)}
                           </Avatar>
@@ -362,10 +379,10 @@ export default function LinkedInSearchPage() {
                           }
                           secondary={
                             <>
-                              <Typography variant="body2" color="text.primary" component="span">
+                                <Typography variant="body2" color="text.primary" component="span">
                                 {profile.title}
                               </Typography>
-                              <Typography variant="body2" color="text.secondary" component="span" sx={{ display: 'block' }}>
+                                <Typography variant="body2" color="text.secondary" component="span" sx={{ display: 'block' }}>
                                 {profile.company}
                               </Typography>
                             </>
@@ -390,23 +407,23 @@ export default function LinkedInSearchPage() {
             >
               <SearchIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
               <Typography variant="subtitle1" fontWeight="medium">No search results</Typography>
-              <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
-                Please enter a valid LinkedIn profile URL or username.
+                <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
+                  Please enter a valid LinkedIn profile URL or username.
+                </Typography>
+                <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
+                  Examples:
+                </Typography>
+                <Box sx={{ mt: 1, width: '100%', maxWidth: '400px' }}>
+                  <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace', mb: 0.5 }}>
+                    • https://linkedin.com/in/cheesewong
+                  </Typography>
+                  <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace', mb: 0.5 }}>
+                    • linkedin.com/in/cheesewong
+                  </Typography>
+                  <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace' }}>
+                    • cheesewong
               </Typography>
-              <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
-                Examples:
-              </Typography>
-              <Box sx={{ mt: 1, width: '100%', maxWidth: '400px' }}>
-                <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace', mb: 0.5 }}>
-                  • https://linkedin.com/in/cheesewong
-                </Typography>
-                <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace', mb: 0.5 }}>
-                  • linkedin.com/in/cheesewong
-                </Typography>
-                <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace' }}>
-                  • cheesewong
-                </Typography>
-              </Box>
+                </Box>
             </Paper>
           )}
         </Grid>
@@ -425,7 +442,7 @@ export default function LinkedInSearchPage() {
                       color: 'primary.dark',
                       fontSize: '1.5rem'
                     }}
-                    src={selectedProfile.profilePicture}
+                      src={selectedProfile.profilePicture}
                   >
                     {getInitials(selectedProfile.name)}
                   </Avatar>
@@ -465,19 +482,19 @@ export default function LinkedInSearchPage() {
                   <Grid item xs={12} sm={6}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <PersonIcon fontSize="small" color="action" sx={{ mr: 1 }} />
-                      <Typography variant="body2">
-                        {selectedProfile.connections ? `${selectedProfile.connections} connections` : 'Connections unknown'}
-                      </Typography>
+                        <Typography variant="body2">
+                          {selectedProfile.connections ? `${selectedProfile.connections} connections` : 'Connections unknown'}
+                        </Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <SchoolIcon fontSize="small" color="action" sx={{ mr: 1 }} />
-                      <Typography variant="body2">
-                        {selectedProfile.education && selectedProfile.education.length > 0 
-                          ? selectedProfile.education[0].school 
-                          : 'No education listed'}
-                      </Typography>
+                        <Typography variant="body2">
+                          {selectedProfile.education && selectedProfile.education.length > 0 
+                            ? selectedProfile.education[0].school 
+                            : 'No education listed'}
+                        </Typography>
                     </Box>
                   </Grid>
                 </Grid>
@@ -487,7 +504,7 @@ export default function LinkedInSearchPage() {
                   <Typography variant="h6" gutterBottom>
                     Work Experience
                   </Typography>
-                  {selectedProfile.experience && selectedProfile.experience.length > 0 ? (
+                    {selectedProfile.experience && selectedProfile.experience.length > 0 ? (
                   <Timeline position="right" sx={{ p: 0, m: 0 }}>
                     {selectedProfile.experience.map((exp, index) => (
                       <TimelineItem key={index}>
@@ -500,22 +517,22 @@ export default function LinkedInSearchPage() {
                             {exp.title}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                              {exp.company} {exp.duration ? `· ${exp.duration}` : ''}
+                                {exp.company} {exp.duration ? `· ${exp.duration}` : ''}
                           </Typography>
-                            {exp.description && (
+                              {exp.description && (
                           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                             {exp.description}
                           </Typography>
-                            )}
+                              )}
                         </TimelineContent>
                       </TimelineItem>
                     ))}
                   </Timeline>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      No work experience information available
-                    </Typography>
-                  )}
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        No work experience information available
+                      </Typography>
+                    )}
                 </Box>
 
                 {/* Education */}
@@ -523,7 +540,7 @@ export default function LinkedInSearchPage() {
                   <Typography variant="h6" gutterBottom>
                     Education
                   </Typography>
-                  {selectedProfile.education && selectedProfile.education.length > 0 ? (
+                    {selectedProfile.education && selectedProfile.education.length > 0 ? (
                   <Timeline position="right" sx={{ p: 0, m: 0 }}>
                     {selectedProfile.education.map((edu, index) => (
                       <TimelineItem key={index}>
@@ -536,17 +553,17 @@ export default function LinkedInSearchPage() {
                             {edu.degree}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                              {edu.school} {edu.year ? `· ${edu.year}` : ''}
+                                {edu.school} {edu.year ? `· ${edu.year}` : ''}
                           </Typography>
                         </TimelineContent>
                       </TimelineItem>
                     ))}
                   </Timeline>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      No education information available
-                    </Typography>
-                  )}
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        No education information available
+                      </Typography>
+                    )}
                 </Box>
 
                 {/* Skills */}
@@ -554,7 +571,7 @@ export default function LinkedInSearchPage() {
                   <Typography variant="h6" gutterBottom>
                     Skills
                   </Typography>
-                  {selectedProfile.skills && selectedProfile.skills.length > 0 ? (
+                    {selectedProfile.skills && selectedProfile.skills.length > 0 ? (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                     {selectedProfile.skills.map((skill, index) => (
                       <Chip 
@@ -565,11 +582,11 @@ export default function LinkedInSearchPage() {
                       />
                     ))}
                   </Box>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      No skills information available
-                    </Typography>
-                  )}
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        No skills information available
+                      </Typography>
+                    )}
                 </Box>
               </CardContent>
               
@@ -591,5 +608,6 @@ export default function LinkedInSearchPage() {
         )}
       </Grid>
     </Box>
+    </ProtectedRoute>
   );
 } 

@@ -25,7 +25,7 @@ class ActionRepository:
             name=name
         )
         
-        with get_session() as session:
+        with get_session(expire_on_commit=False) as session:
             session.add(action_report)
             session.commit()
             session.refresh(action_report)

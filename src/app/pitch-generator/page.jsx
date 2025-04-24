@@ -37,6 +37,8 @@ import {
   VisibilityOff as VisibilityOffIcon,
   Check as CheckIcon
 } from '@mui/icons-material';
+import { reportUserAction } from '../../services/analytics';
+import ProtectedRoute from '../../components/ProtectedRoute';
 
 // 封装使用useSearchParams的组件
 function PitchGeneratorContent() {
@@ -214,6 +216,20 @@ function PitchGeneratorContent() {
     setError('');
 
     try {
+      // Report email generation action
+      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        if (key) acc[key] = value;
+        return acc;
+      }, {});
+      
+      const userData = {
+        email: cookies.user_email || '',
+        name: cookies.user_name || ''
+      };
+      
+      await reportUserAction('pitch_generate', userData);
+      
       // Call OpenAI API
       const response = await axios.post(
         'https://api.openai.com/v1/chat/completions',
@@ -507,15 +523,17 @@ function PitchGeneratorContent() {
 // 主页面组件，使用Suspense包装使用useSearchParams的内容组件
 export default function PitchGeneratorPage() {
   return (
-    <Suspense fallback={
-      <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
-        <CircularProgress />
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          Loading...
-        </Typography>
-      </Container>
-    }>
-      <PitchGeneratorContent />
-    </Suspense>
+    <ProtectedRoute>
+      <Suspense fallback={
+        <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
+          <CircularProgress />
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            Loading...
+          </Typography>
+        </Container>
+      }>
+        <PitchGeneratorContent />
+      </Suspense>
+    </ProtectedRoute>
   );
 } 

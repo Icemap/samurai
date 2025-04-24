@@ -12,6 +12,7 @@ import {
   Alert
 } from '@mui/material';
 import { Google as GoogleIcon } from '@mui/icons-material';
+import { reportUserAction } from '../../services/analytics';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -54,11 +55,14 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
+      // Report login action
+      await reportUserAction('login', { email: '', name: '' });
+      
       // Save the callback URL in a cookie before redirection
       document.cookie = `frontend_redirect=${encodeURIComponent(callbackUrl)};path=/;max-age=600;SameSite=Lax`;
       
       // Redirect to backend authentication endpoint
-      window.location.href = 'http://localhost:5001/login';
+      window.location.href = process.env.BACKEND_URL + '/login';
     } catch (err) {
       console.error('Login error:', err);
       setError('An error occurred during sign in. Please try again.');
