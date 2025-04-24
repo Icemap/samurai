@@ -58,9 +58,11 @@ export default function LoginPage() {
       // Report login action
       await reportUserAction('login', { email: '', name: '' });
       
-      // Redirect to our API route that handles the login redirection
-      // The API route will set the cookie and redirect to the backend
-      window.location.href = `/api/auth/login-redirect?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+      // Save the callback URL in a cookie before redirection
+      document.cookie = `frontend_redirect=${encodeURIComponent(callbackUrl)};path=/;max-age=600;SameSite=Lax`;
+      
+      // Redirect to backend authentication endpoint
+      window.location.href = process.env.BACKEND_URL + '/login';
     } catch (err) {
       console.error('Login error:', err);
       setError('An error occurred during sign in. Please try again.');
