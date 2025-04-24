@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 // List of public paths that don't require authentication
-const PUBLIC_PATHS = ['/', '/login', '/icon.jpg'];
+const PUBLIC_PATHS = ['/', '/login', '/icon.jpg', '/api/auth/login-callback'];
 
 // List of API routes that need protection
 const PROTECTED_API_ROUTES = ['/api/linkedin', '/api/search', '/api/pitch-generator'];

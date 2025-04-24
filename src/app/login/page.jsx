@@ -12,7 +12,6 @@ import {
   Alert
 } from '@mui/material';
 import { Google as GoogleIcon } from '@mui/icons-material';
-import { reportUserAction } from '../../services/analytics';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -55,9 +54,6 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      // Report login action
-      await reportUserAction('login', { email: '', name: '' });
-      
       // Save the callback URL in a cookie before redirection
       document.cookie = `frontend_redirect=${encodeURIComponent(callbackUrl)};path=/;max-age=600;SameSite=Lax`;
       

@@ -1,4 +1,5 @@
 import json
+from urllib.parse import urlencode
 from authlib.integrations.starlette_client import OAuth
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -30,24 +31,32 @@ async def login(request: Request):
 @router.route('/auth/google')
 async def auth_google(request: Request):
     token = await oauth.google.authorize_access_token(request)
-
-    # 使用access_token获取用户信息
     resp = await oauth.google.get('userinfo', token=token)
     user = resp.json()
 
     if user:
         request.session['user'] = dict(user)
-        response = RedirectResponse(url=settings.AFTER_LOGIN_REDIRECT_URI)
         
-        # Set individual cookies for each user field instead of one JSON cookie
-        response.set_cookie(key="user_id", value=user.get("id", ""))
-        response.set_cookie(key="user_email", value=user.get("email", ""))
-        response.set_cookie(key="user_name", value=user.get("name", ""))
-        response.set_cookie(key="user_picture", value=user.get("picture", ""))
-        response.set_cookie(key="user_given_name", value=user.get("given_name", ""))
-        response.set_cookie(key="user_family_name", value=user.get("family_name", ""))
-        response.set_cookie(key="user_hd", value=user.get("hd", ""))
-        response.set_cookie(key="user_verified_email", value=str(user.get("verified_email", False)).lower())
+        # Prepare user data as query parameters
+        user_params = {
+            "user_id": user.get("id", ""),
+            "user_email": user.get("email", ""),
+            "user_name": user.get("name", ""),
+            "user_picture": user.get("picture", ""),
+            "user_given_name": user.get("given_name", ""),
+            "user_family_name": user.get("family_name", ""),
+            "user_hd": user.get("hd", ""),
+            "user_verified_email": str(user.get("verified_email", False)).lower()
+        }
         
-        return response
+        # Filter out any parameters with empty values, if desired
+        user_params_filtered = {k: v for k, v in user_params.items() if v}
+        
+        # Construct the redirect URL with query parameters
+        redirect_url = f"{settings.AFTER_LOGIN_REDIRECT_URI}?{urlencode(user_params_filtered)}"
+        
+        print(redirect_url)
+        
+        return RedirectResponse(url=redirect_url)
+        
     return JSONResponse(content={"error": "Authentication failed"})
