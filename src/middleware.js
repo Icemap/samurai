@@ -6,8 +6,21 @@ const PUBLIC_PATHS = ['/', '/login', '/icon.jpg'];
 // List of API routes that need protection
 const PROTECTED_API_ROUTES = ['/api/linkedin', '/api/search', '/api/pitch-generator'];
 
+// List of API routes that don't need protection
+const PUBLIC_API_ROUTES = ['/api/auth/login-redirect', '/api/analytics/report'];
+
 export function middleware(request) {
   const { pathname } = request.nextUrl;
+  
+  // Skip authentication check for public resources
+  if (pathname.startsWith('/public/')) {
+    return NextResponse.next();
+  }
+  
+  // Skip authentication check for public API routes
+  if (PUBLIC_API_ROUTES.some(route => pathname.startsWith(route))) {
+    return NextResponse.next();
+  }
   
   // Function to check if the route should be protected
   const isProtectedPage = !PUBLIC_PATHS.some(path => 
