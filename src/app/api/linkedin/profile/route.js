@@ -3,6 +3,15 @@ import axios from 'axios';
 
 export async function GET(request) {
   try {
+    // Check if the user is authenticated
+    const cookies = request.cookies;
+    const userId = cookies.get('user_id')?.value;
+    
+    // If not authenticated, return 401 Unauthorized
+    if (!userId) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+    
     // Extract linkedin_profile_url from query params
     const { searchParams } = new URL(request.url);
     const linkedinProfileUrl = searchParams.get('linkedin_profile_url');
