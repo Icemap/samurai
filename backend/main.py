@@ -3,6 +3,7 @@ from fastapi import FastAPI
 import uvicorn
 
 from starlette.middleware.sessions import SessionMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.utils.logger import get_logger
 from app.config import settings
@@ -15,6 +16,16 @@ load_dotenv()
 logger = get_logger("main")
 
 app = FastAPI(title="Samurai")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
+)
+
 app.add_middleware(SessionMiddleware, secret_key="secret-string")
 
 # Include the routers
