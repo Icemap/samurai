@@ -6,7 +6,7 @@ export async function POST(request) {
     const payload = await request.json();
     
     // Forward the request to the external API
-    const response = await fetch(process.env.BACKEND_URL + '/report', {
+    const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + '/report', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
