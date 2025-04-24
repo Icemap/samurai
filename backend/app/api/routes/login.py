@@ -22,7 +22,7 @@ oauth.register(
 async def login(request: Request):
     # absolute url for callback
     # we will define it below
-    redirect_uri = request.url_for('auth_google')
+    redirect_uri = settings.GOOGLE_REDIRECT_URI
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
