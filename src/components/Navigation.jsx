@@ -2,9 +2,10 @@
 
 import { useEffect, useState, Fragment } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTheme as useMuiTheme } from '@mui/material/styles';
 import { useTheme as useAppTheme } from './ThemeProvider';
+import { getUser, logout } from '../lib/auth';
 
 // MUI Components
 import {
@@ -27,6 +28,7 @@ import {
   ListItemButton,
   useTheme,
   useScrollTrigger,
+  Divider,
 } from '@mui/material';
 
 // MUI Icons
@@ -35,6 +37,9 @@ import {
   Brightness4 as DarkModeIcon,
   Brightness7 as LightModeIcon,
   Close as CloseIcon,
+  Login as LoginIcon,
+  Logout as LogoutIcon,
+  AccountCircle as AccountCircleIcon,
 } from '@mui/icons-material';
 
 const pages = [
@@ -71,8 +76,50 @@ export default function Navigation() {
   const theme = useMuiTheme();
   const { isDark, setIsDark } = useAppTheme();
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolledDown, setScrolledDown] = useState(false);
+  const [user, setUser] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  
+  // Check user authentication status
+  useEffect(() => {
+    const checkUser = () => {
+      const userData = getUser();
+      setUser(userData);
+    };
+    
+    checkUser();
+    
+    // Listen for cookie changes
+    window.addEventListener('cookie-change', checkUser);
+    return () => {
+      window.removeEventListener('cookie-change', checkUser);
+    };
+  }, []);
+  
+  // Handle user menu open
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+  
+  // Handle user menu close
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+  
+  // Handle logout
+  const handleLogout = () => {
+    logout(() => {
+      handleCloseUserMenu();
+      router.push('/');
+    });
+  };
+  
+  // Handle login
+  const handleLogin = () => {
+    router.push('/login');
+  };
   
   // Track scroll position to add shadow effect
   useEffect(() => {
@@ -228,6 +275,53 @@ export default function Navigation() {
                     </ListItem>
                   ))}
                 </List>
+                <Divider />
+                {user ? (
+                  <Box sx={{ p: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      {user.picture ? (
+                        <Avatar 
+                          alt={user.name} 
+                          src={user.picture}
+                          sx={{ width: 40, height: 40, mr: 2 }}
+                        />
+                      ) : (
+                        <Avatar sx={{ width: 40, height: 40, mr: 2, bgcolor: 'primary.main' }}>
+                          {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                        </Avatar>
+                      )}
+                      <Box>
+                        <Typography variant="subtitle1" fontWeight="bold">
+                          {user.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 200 }}>
+                          {user.email}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Button 
+                      fullWidth 
+                      variant="outlined" 
+                      color="primary"
+                      onClick={handleLogout}
+                      startIcon={<LogoutIcon />}
+                    >
+                      Logout
+                    </Button>
+                  </Box>
+                ) : (
+                  <Box sx={{ p: 2 }}>
+                    <Button 
+                      fullWidth 
+                      variant="contained" 
+                      color="primary"
+                      onClick={handleLogin}
+                      startIcon={<LoginIcon />}
+                    >
+                      Login
+                    </Button>
+                  </Box>
+                )}
               </Drawer>
             </Box>
             
@@ -305,14 +399,83 @@ export default function Navigation() {
             </Box>
 
             {/* Theme Toggle Button */}
-            <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <IconButton 
                 color="inherit" 
                 onClick={toggleDarkMode}
                 aria-label="Toggle theme"
+                sx={{ mr: 1 }}
               >
                 {isDark ? <LightModeIcon /> : <DarkModeIcon />}
               </IconButton>
+              
+              {/* Auth Button */}
+              {user ? (
+                <Box sx={{ ml: 1 }}>
+                  <Tooltip title="Account settings">
+                    <IconButton 
+                      onClick={handleOpenUserMenu} 
+                      sx={{ p: 0 }}
+                      aria-label="Account settings"
+                      aria-controls="user-menu"
+                      aria-haspopup="true"
+                    >
+                      {user.picture ? (
+                        <Avatar 
+                          alt={user.name} 
+                          src={user.picture}
+                          sx={{ width: 36, height: 36 }}
+                        />
+                      ) : (
+                        <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.main' }}>
+                          {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                        </Avatar>
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    id="user-menu"
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                  >
+                    <Box sx={{ px: 2, py: 1 }}>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {user.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {user.email}
+                      </Typography>
+                    </Box>
+                    <Divider />
+                    <MenuItem onClick={handleLogout}>
+                      <ListItemIcon>
+                        <LogoutIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Logout</ListItemText>
+                    </MenuItem>
+                  </Menu>
+                </Box>
+              ) : (
+                <Button 
+                  startIcon={<LoginIcon />}
+                  onClick={handleLogin}
+                  variant="outlined"
+                  size="small"
+                  sx={{ ml: 1 }}
+                >
+                  Login
+                </Button>
+              )}
             </Box>
           </Toolbar>
         </Container>

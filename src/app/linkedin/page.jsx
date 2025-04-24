@@ -488,29 +488,29 @@ export default function LinkedInSearchPage() {
                     Work Experience
                   </Typography>
                   {selectedProfile.experience && selectedProfile.experience.length > 0 ? (
-                    <Timeline position="right" sx={{ p: 0, m: 0 }}>
-                      {selectedProfile.experience.map((exp, index) => (
-                        <TimelineItem key={index}>
-                          <TimelineSeparator>
-                            <TimelineDot color="primary" />
-                            {index < selectedProfile.experience.length - 1 && <TimelineConnector />}
-                          </TimelineSeparator>
-                          <TimelineContent sx={{ py: '12px', px: 2 }}>
-                            <Typography variant="subtitle2" component="span">
-                              {exp.title}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                  <Timeline position="right" sx={{ p: 0, m: 0 }}>
+                    {selectedProfile.experience.map((exp, index) => (
+                      <TimelineItem key={index}>
+                        <TimelineSeparator>
+                          <TimelineDot color="primary" />
+                          {index < selectedProfile.experience.length - 1 && <TimelineConnector />}
+                        </TimelineSeparator>
+                        <TimelineContent sx={{ py: '12px', px: 2 }}>
+                          <Typography variant="subtitle2" component="span">
+                            {exp.title}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
                               {exp.company} {exp.duration ? `· ${exp.duration}` : ''}
-                            </Typography>
+                          </Typography>
                             {exp.description && (
-                              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                                {exp.description}
-                              </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                            {exp.description}
+                          </Typography>
                             )}
-                          </TimelineContent>
-                        </TimelineItem>
-                      ))}
-                    </Timeline>
+                        </TimelineContent>
+                      </TimelineItem>
+                    ))}
+                  </Timeline>
                   ) : (
                     <Typography variant="body2" color="text.secondary">
                       No work experience information available
@@ -524,24 +524,24 @@ export default function LinkedInSearchPage() {
                     Education
                   </Typography>
                   {selectedProfile.education && selectedProfile.education.length > 0 ? (
-                    <Timeline position="right" sx={{ p: 0, m: 0 }}>
-                      {selectedProfile.education.map((edu, index) => (
-                        <TimelineItem key={index}>
-                          <TimelineSeparator>
-                            <TimelineDot color="secondary" />
-                            {index < selectedProfile.education.length - 1 && <TimelineConnector />}
-                          </TimelineSeparator>
-                          <TimelineContent sx={{ py: '12px', px: 2 }}>
-                            <Typography variant="subtitle2" component="span">
-                              {edu.degree}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                  <Timeline position="right" sx={{ p: 0, m: 0 }}>
+                    {selectedProfile.education.map((edu, index) => (
+                      <TimelineItem key={index}>
+                        <TimelineSeparator>
+                          <TimelineDot color="secondary" />
+                          {index < selectedProfile.education.length - 1 && <TimelineConnector />}
+                        </TimelineSeparator>
+                        <TimelineContent sx={{ py: '12px', px: 2 }}>
+                          <Typography variant="subtitle2" component="span">
+                            {edu.degree}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
                               {edu.school} {edu.year ? `· ${edu.year}` : ''}
-                            </Typography>
-                          </TimelineContent>
-                        </TimelineItem>
-                      ))}
-                    </Timeline>
+                          </Typography>
+                        </TimelineContent>
+                      </TimelineItem>
+                    ))}
+                  </Timeline>
                   ) : (
                     <Typography variant="body2" color="text.secondary">
                       No education information available
@@ -555,16 +555,16 @@ export default function LinkedInSearchPage() {
                     Skills
                   </Typography>
                   {selectedProfile.skills && selectedProfile.skills.length > 0 ? (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                      {selectedProfile.skills.map((skill, index) => (
-                        <Chip 
-                          key={index} 
-                          label={skill}
-                          variant="outlined"
-                          size="small"
-                        />
-                      ))}
-                    </Box>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {selectedProfile.skills.map((skill, index) => (
+                      <Chip 
+                        key={index} 
+                        label={skill}
+                        variant="outlined"
+                        size="small"
+                      />
+                    ))}
+                  </Box>
                   ) : (
                     <Typography variant="body2" color="text.secondary">
                       No skills information available

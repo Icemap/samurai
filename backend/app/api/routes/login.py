@@ -1,3 +1,4 @@
+import json
 from authlib.integrations.starlette_client import OAuth
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -36,5 +37,17 @@ async def auth_google(request: Request):
 
     if user:
         request.session['user'] = dict(user)
-        return JSONResponse(content=user)
+        response = RedirectResponse(url=settings.AFTER_LOGIN_REDIRECT_URI)
+        
+        # Set individual cookies for each user field instead of one JSON cookie
+        response.set_cookie(key="user_id", value=user.get("id", ""))
+        response.set_cookie(key="user_email", value=user.get("email", ""))
+        response.set_cookie(key="user_name", value=user.get("name", ""))
+        response.set_cookie(key="user_picture", value=user.get("picture", ""))
+        response.set_cookie(key="user_given_name", value=user.get("given_name", ""))
+        response.set_cookie(key="user_family_name", value=user.get("family_name", ""))
+        response.set_cookie(key="user_hd", value=user.get("hd", ""))
+        response.set_cookie(key="user_verified_email", value=str(user.get("verified_email", False)).lower())
+        
+        return response
     return JSONResponse(content={"error": "Authentication failed"})

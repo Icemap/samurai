@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
     GOOGLE_REDIRECT_URI: str
+    AFTER_LOGIN_REDIRECT_URI: str
 
     @computed_field  # type: ignore[misc]
     @property
