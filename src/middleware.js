@@ -6,6 +6,9 @@ const PUBLIC_PATHS = ['/', '/login', '/icon.jpg'];
 // List of API routes that need protection
 const PROTECTED_API_ROUTES = ['/api/linkedin', '/api/search', '/api/pitch-generator'];
 
+// All API routes pattern for detecting any API request
+const API_PATH_PATTERN = /^\/api\//;
+
 export function middleware(request) {
   const { pathname } = request.nextUrl;
   
@@ -19,14 +22,17 @@ export function middleware(request) {
     pathname.startsWith(route)
   );
   
+  // Check if this is any API route (for handling 401 vs redirect)
+  const isApiRoute = API_PATH_PATTERN.test(pathname);
+  
   // Get authentication status from cookies
   const cookies = request.cookies;
   const isAuthenticated = cookies.has('user_id');
   
   // Redirect to login if accessing protected route without authentication
   if ((isProtectedPage || isProtectedApiRoute) && !isAuthenticated) {
-    // For API routes, return 401 Unauthorized
-    if (isProtectedApiRoute) {
+    // For ANY API routes, return 401 Unauthorized instead of redirecting
+    if (isApiRoute) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
